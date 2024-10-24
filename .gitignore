@@ -363,6 +363,6 @@ MigrationBackup/
 FodyWeavers.xsd
 
 # Database ignore
-.db
-.db-shm
-.db-wal
+*.db
+*.db-shm
+*.db-wal

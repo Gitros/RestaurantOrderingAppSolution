@@ -1,6 +1,6 @@
 ﻿using Domain;
 
-namespace Persistence;
+namespace Infrastructure.Database;
 
 public class Seed
 {
