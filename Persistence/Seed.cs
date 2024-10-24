@@ -1,4 +1,4 @@
-﻿using Domain;
+﻿using Domain.Aggregates.TableAggregate;
 
 namespace Persistence;
 
@@ -6,82 +6,68 @@ public class Seed
 {
     public static async Task SeedData(DataContext context)
     {
-        if (!context.Orders.Any() && !context.OrderItems.Any())
+        if (!context.Tables.Any())
         {
-            var items = new List<OrderItem>
+            var tables = new List<Table>
             {
-                new OrderItem
+                new Table
                 {
-                    Name = "Pizza",
-                    Price = 20,
-                    Quantity = 1,
+                    TableId = 1,
+                    TableNumber = "P1"
                 },
-                new OrderItem
+                new Table
                 {
-                    Name = "Drink",
-                    Price = 10,
-                    Quantity = 2,
+                    TableId = 2,
+                    TableNumber = "P2"
                 },
-                new OrderItem
+                new Table
                 {
-                    Name = "Pizza",
-                    Price = 30,
-                    Quantity = 3,
+                    TableId = 3,
+                    TableNumber = "L1"
                 },
+                new Table
+                {
+                    TableId = 4,
+                    TableNumber = "L2"
+                },
+                new Table
+                {
+                    TableId = 5,
+                    TableNumber = "K1"
+                },
+                new Table
+                {
+                    TableId = 6,
+                    TableNumber = "K2"
+                },
+                new Table
+                {
+                    TableId = 7,
+                    TableNumber = "K3"
+                },
+                new Table
+                {
+                    TableId = 8,
+                    TableNumber = "K4"
+                },
+                new Table
+                {
+                    TableId = 9,
+                    TableNumber = "B1"
+                },
+                new Table
+                {
+                    TableId = 10,
+                    TableNumber = "B2"
+                },
+                new Table
+                {
+                    TableId = 11,
+                    TableNumber = "B3"
+                }
             };
 
-            var orders = new List<Order>
-        {
-            new Order
-            {
-                Table = "P1",
-                OrderDate = DateTime.UtcNow,
-                OrderItems = new List<OrderItem>
-                {
-                    new OrderItem
-                    {
-                        Name = "Pizza",
-                        Price = 20,
-                        Quantity = 2,
-                    }
-                },
-                TotalAmount = 40
-            },
-
-            new Order
-            {
-                Table = "P2",
-                OrderDate = DateTime.UtcNow,
-                OrderItems = new List<OrderItem>
-                {
-                    new OrderItem
-                    {
-                        Name = "Pizza",
-                        Price = 40,
-                        Quantity = 3,
-                    }
-                },
-                TotalAmount = 120
-            },
-
-            new Order
-            {
-                Table = "K1",
-                OrderDate = DateTime.UtcNow,
-                OrderItems = new List<OrderItem>
-                {
-                    new OrderItem
-                    {
-                        Name = "Pizza",
-                        Price = 50,
-                        Quantity = 5,
-                    }
-                },
-                TotalAmount = 250
-            }
-        };
-
-            await context.Orders.AddRangeAsync(orders);
+            await context.Tables.AddRangeAsync(tables);
             await context.SaveChangesAsync();
         }
     }
