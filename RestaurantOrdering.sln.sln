@@ -28,7 +28,7 @@ Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "order-app", "order-app\", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Domain", "Domain\Domain.csproj", "{B71BD5EE-D403-4FE2-AC6D-6A0E9C5FD7DC}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Persistence", "Persistence\Persistence.csproj", "{296FE2A6-4F8F-43EE-9207-D9532C262F31}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Infrastructure.Database", "Persistence\Infrastructure.Database.csproj", "{296FE2A6-4F8F-43EE-9207-D9532C262F31}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Application", "Application\Application.csproj", "{ADC8DD28-AE2E-4E40-9F92-D071079207AC}"
 EndProject

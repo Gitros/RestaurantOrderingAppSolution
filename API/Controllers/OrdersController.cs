@@ -1,4 +1,4 @@
-﻿using Domain.Aggregates.OrderAggregate;
+﻿using Domain;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Persistence;
@@ -21,7 +21,7 @@ public class OrdersController : BaseApiController
     }
 
     [HttpGet("{id}")]
-    public async Task<ActionResult<Order>> GetOrder(int id)
+    public async Task<ActionResult<Order>> GetOrder(Guid id)
     {
         return await _context.Orders.FindAsync(id);
     }

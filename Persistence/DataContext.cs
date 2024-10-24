@@ -1,6 +1,4 @@
-﻿using Domain.Aggregates.MenuAggregate;
-using Domain.Aggregates.OrderAggregate;
-using Domain.Aggregates.TableAggregate;
+﻿using Domain;
 using Microsoft.EntityFrameworkCore;
 
 namespace Persistence;
@@ -13,7 +11,7 @@ public class DataContext : DbContext
 
     public DbSet<Order> Orders { get; set; }
     public DbSet<OrderItem> OrderItems { get; set; }
-    public DbSet<Menu> Menus { get; set; }
+    public DbSet<MenuType> Menus { get; set; }
     public DbSet<MenuItem> MenuItems { get; set; }
     public DbSet<Table> Tables { get; set; }
 
@@ -24,11 +22,11 @@ public class DataContext : DbContext
         modelBuilder.Entity<Order>()
             .HasMany(o => o.OrderItems)
             .WithOne(oi => oi.Order)
-            .HasForeignKey(oi => oi.OrderId);
+            .HasForeignKey(oi => oi.Id);
 
-        modelBuilder.Entity<Menu>()
+        modelBuilder.Entity<MenuType>()
             .HasMany(m => m.MenuItems)
-            .WithOne(mi => mi.Menu)
-            .HasForeignKey(mi => mi.MenuId);
+            .WithOne(mi => mi.MenuType)
+            .HasForeignKey(mi => mi.Id);
     }
 }
