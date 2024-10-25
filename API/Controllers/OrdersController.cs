@@ -1,4 +1,5 @@
-﻿using Domain;
+﻿using Application.Orders.Queries;
+using Domain;
 using Infrastructure.Database;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -7,15 +8,11 @@ namespace API.Controllers;
 
 public class OrdersController : BaseApiController
 {
-    [HttpGet]
-    public async Task<ActionResult<List<Order>>> GetOrders()
-    {
-        return await Mediator.Send(new List<>)
-    }
-
     [HttpGet("{id}")]
-    public async Task<ActionResult<Order>> GetOrder(Guid id)
+    public async Task<ActionResult<Order>> GetOrderById(Guid id)
     {
-        return await _context.Orders.FindAsync(id);
+        var query = new GetOrderById(id);
+        var order = await Mediator.Send(query);
+        return order != null ? Ok(order) : NotFound();
     }
 }
