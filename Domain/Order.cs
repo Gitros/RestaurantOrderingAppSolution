@@ -7,7 +7,7 @@ public class Order
     public decimal TotalAmount { get; set; }
     public OrderStatus OrderStatus { get; set; }
 
-    public IEnumerable<OrderItem> OrderItems { get; set; }
+    public List<OrderItem> OrderItems { get; set; } = new List<OrderItem>();
 
     public Guid TableId { get; set; }
     public Table Table { get; set; }

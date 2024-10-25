@@ -7,6 +7,5 @@ public class Table
     public int NumberOfPeople { get; set; }
     public bool IsOccupied { get; set; }
 
-    public List<Guid> OrderIds { get; set; }
-    public IEnumerable<Order> Orders { get; set; }
+    public List<Order> Orders { get; set; } = new List<Order>();
 }

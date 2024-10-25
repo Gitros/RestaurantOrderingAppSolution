@@ -22,11 +22,16 @@ public class DataContext : DbContext
         modelBuilder.Entity<Order>()
             .HasMany(o => o.OrderItems)
             .WithOne(oi => oi.Order)
-            .HasForeignKey(oi => oi.Id);
+            .HasForeignKey(oi => oi.OrderId);
 
         modelBuilder.Entity<MenuType>()
             .HasMany(m => m.MenuItems)
             .WithOne(mi => mi.MenuType)
-            .HasForeignKey(mi => mi.Id);
+            .HasForeignKey(mi => mi.MenuTypeId);
+
+        modelBuilder.Entity<Table>()
+            .HasMany(t => t.Orders)
+            .WithOne(o => o.Table)
+            .HasForeignKey(o => o.TableId);
     }
 }
