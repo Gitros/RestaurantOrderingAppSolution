@@ -7,17 +7,10 @@ namespace API.Controllers;
 
 public class OrdersController : BaseApiController
 {
-    private readonly DataContext _context;
-
-    public OrdersController(DataContext context)
-    {
-        _context = context;
-    }
-
     [HttpGet]
     public async Task<ActionResult<List<Order>>> GetOrders()
     {
-        return await _context.Orders.ToListAsync();
+        return await Mediator.Send(new List<>)
     }
 
     [HttpGet("{id}")]
