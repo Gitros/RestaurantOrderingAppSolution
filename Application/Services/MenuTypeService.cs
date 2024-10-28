@@ -70,8 +70,18 @@ public class MenuTypeService : IMenuTypeService
         };
     }
 
-    public Task<MenuTypeReadDto> UpdateMenuType(MenuTypeUpdateDto menuTypeUpdateDto, Guid id)
+    public async Task<MenuTypeReadDto> UpdateMenuType(MenuTypeUpdateDto menuTypeUpdateDto, Guid id)
     {
-        throw new NotImplementedException();
+        var menuTypeToUpdate = await _orderingContext.Menus.FirstOrDefaultAsync(x => x.Id == id);
+
+        menuTypeToUpdate.Name = menuTypeUpdateDto.Name;
+
+        await _orderingContext.SaveChangesAsync();
+
+        return new MenuTypeReadDto
+        {
+            Id = id,
+            Name = menuTypeToUpdate.Name,
+        };
     }
 }

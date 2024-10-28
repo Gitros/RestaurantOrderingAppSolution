@@ -28,6 +28,10 @@ public class MenuTypeController : ControllerBase
     public async Task<List<MenuTypeReadDto>> GetAllMenuTypes() => 
         await _menuTypeService.GetAllMenuTypes();
 
+    [HttpPost("{id}")]
+    public async Task<MenuTypeReadDto> UpdateMenuType(MenuTypeUpdateDto menuTypeUpdateDto, Guid id) => 
+        await _menuTypeService.UpdateMenuType(menuTypeUpdateDto, id);
+
     [HttpDelete]
     public async Task DeleteMenuType(Guid id) => 
         await _menuTypeService.DeleteMenuType(id);
