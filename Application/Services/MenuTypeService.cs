@@ -2,6 +2,7 @@
 using Application.Dtos.MenuTypes;
 using Domain;
 using Infrastructure.Database;
+using Microsoft.EntityFrameworkCore;
 
 namespace Application.Services;
 
@@ -34,9 +35,15 @@ public class MenuTypeService : IMenuTypeService
         return createdMenuType;
     }
 
-    public Task DeleteMenuType(Guid id)
+    public async Task DeleteMenuType(Guid id)
     {
-        throw new NotImplementedException();
+        var menuTypeToDelete = await _orderingContext.Menus.FindAsync(id);
+
+        if (menuTypeToDelete != null)
+        {
+            _orderingContext.Menus.Remove(menuTypeToDelete);
+            await _orderingContext.SaveChangesAsync();
+        }
     }
 
     public Task<List<MenuTypeReadDto>> GetAllMenuTypes()
@@ -44,9 +51,17 @@ public class MenuTypeService : IMenuTypeService
         throw new NotImplementedException();
     }
 
-    public Task<MenuTypeReadDto> GetMenuType(Guid id)
+    public async Task<MenuTypeReadDto> GetMenuType(Guid id)
     {
-        throw new NotImplementedException();
+        var menuType = await _orderingContext.Menus.FirstOrDefaultAsync(x => x.Id == id);
+
+        if (menuType == null) return null;
+
+        return new MenuTypeReadDto
+        {
+            Id = id,
+            Name = menuType.Name,
+        };
     }
 
     public Task<MenuTypeReadDto> UpdateMenuType(MenuTypeUpdateDto menuTypeUpdateDto, Guid id)
