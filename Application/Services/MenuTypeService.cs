@@ -46,16 +46,22 @@ public class MenuTypeService : IMenuTypeService
         }
     }
 
-    public Task<List<MenuTypeReadDto>> GetAllMenuTypes()
+    public async Task<List<MenuTypeReadDto>> GetAllMenuTypes()
     {
-        throw new NotImplementedException();
+        var menuTypes = await _orderingContext.Menus
+            .Select(menu => new MenuTypeReadDto
+            {
+                Id = Guid.NewGuid(),
+                Name = menu.Name,
+            })
+            .ToListAsync();
+
+        return menuTypes;
     }
 
     public async Task<MenuTypeReadDto> GetMenuType(Guid id)
     {
         var menuType = await _orderingContext.Menus.FirstOrDefaultAsync(x => x.Id == id);
-
-        if (menuType == null) return null;
 
         return new MenuTypeReadDto
         {

@@ -20,9 +20,13 @@ public class MenuTypeController : ControllerBase
     public async Task<MenuTypeReadDto> CreateMenuType(MenuTypeCreateDto menuTypeCreateDto) => 
         await _menuTypeService.CreateMenuType(menuTypeCreateDto);
 
-    [HttpGet]
+    [HttpGet("{id}")]
     public async Task<MenuTypeReadDto> GetMenuType(Guid id) => 
         await _menuTypeService.GetMenuType(id);
+
+    [HttpGet]
+    public async Task<List<MenuTypeReadDto>> GetAllMenuTypes() => 
+        await _menuTypeService.GetAllMenuTypes();
 
     [HttpDelete]
     public async Task DeleteMenuType(Guid id) => 
