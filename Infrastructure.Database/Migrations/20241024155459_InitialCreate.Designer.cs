@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Infrastructure.Database.Migrations
 {
-    [DbContext(typeof(DataContext))]
+    [DbContext(typeof(RestaurantOrderingContext))]
     [Migration("20241024155459_InitialCreate")]
     partial class InitialCreate
     {

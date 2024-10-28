@@ -4,7 +4,7 @@ namespace Infrastructure.Database;
 
 public class Seed
 {
-    public static async Task SeedData(DataContext context)
+    public static async Task SeedData(RestaurantOrderingContext context)
     {
         if (!context.Tables.Any())
         {

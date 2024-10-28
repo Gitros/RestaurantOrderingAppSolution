@@ -3,9 +3,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Database;
 
-public class DataContext : DbContext
+public class RestaurantOrderingContext : DbContext
 {
-    public DataContext(DbContextOptions options) : base(options)
+    public RestaurantOrderingContext(DbContextOptions options) : base(options)
     {
     }
 
