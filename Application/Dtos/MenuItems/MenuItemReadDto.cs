@@ -1,12 +1,9 @@
-﻿namespace Domain;
+﻿namespace Application.Dtos.MenuItems;
 
-public class MenuItem
+public class MenuItemReadDto
 {
     public Guid Id { get; set; }
     public string Name { get; set; }
     public string Description { get; set; }
     public decimal Price { get; set; }
-
-    public Guid MenuTypeId { get; set; }
-    public MenuType MenuType { get; set; }
 }

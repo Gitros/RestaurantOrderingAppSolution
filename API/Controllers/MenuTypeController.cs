@@ -9,7 +9,7 @@ namespace API.Controllers;
 [Route("api/[controller]")]
 public class MenuTypeController : ControllerBase
 {
-    private IMenuTypeService _menuTypeService;
+    private readonly IMenuTypeService _menuTypeService;
 
     public MenuTypeController(IMenuTypeService menuTypeService)
     {
@@ -17,7 +17,7 @@ public class MenuTypeController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<MenuTypeReadDto> CreateMenuType(MenuTypeCreateDto menuTypeCreateDto) => 
+    public async Task<MenuTypeReadDto> CreateMenuType([FromBody]MenuTypeCreateDto menuTypeCreateDto) => 
         await _menuTypeService.CreateMenuType(menuTypeCreateDto);
 
     [HttpGet("{id}")]
@@ -28,11 +28,11 @@ public class MenuTypeController : ControllerBase
     public async Task<List<MenuTypeReadDto>> GetAllMenuTypes() => 
         await _menuTypeService.GetAllMenuTypes();
 
-    [HttpPost("{id}")]
+    [HttpPut("{id}")]
     public async Task<MenuTypeReadDto> UpdateMenuType(MenuTypeUpdateDto menuTypeUpdateDto, Guid id) => 
         await _menuTypeService.UpdateMenuType(menuTypeUpdateDto, id);
 
-    [HttpDelete]
+    [HttpDelete("{id}")]
     public async Task DeleteMenuType(Guid id) => 
         await _menuTypeService.DeleteMenuType(id);
 }
