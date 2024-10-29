@@ -51,7 +51,7 @@ public class MenuTypeService : IMenuTypeService
         var menuTypes = await _orderingContext.Menus
             .Select(menu => new MenuTypeReadDto
             {
-                Id = Guid.NewGuid(),
+                Id = menu.Id,
                 Name = menu.Name,
             })
             .ToListAsync();
