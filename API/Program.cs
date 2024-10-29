@@ -9,6 +9,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddScoped<IMenuTypeService, MenuTypeService>();
 builder.Services.AddScoped<IMenuItemService, MenuItemService>();
+builder.Services.AddScoped<IOrderItemService, OrderItemService>();
 
 builder.Services.AddControllers();
 
