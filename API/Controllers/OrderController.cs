@@ -16,5 +16,10 @@ public class OrderController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<OrderReadDto> CreateOrder(OrderCreateDto orderCreateDto) => await _orderService.CreateOrder(orderCreateDto);
+    public async Task<OrderReadDto> CreateOrder(OrderCreateDto orderCreateDto) => 
+        await _orderService.CreateOrder(orderCreateDto);
+
+    [HttpGet("{id}")]
+    public async Task<OrderReadDto> GetOrder(Guid id) =>
+        await _orderService.GetOrder(id);
 }

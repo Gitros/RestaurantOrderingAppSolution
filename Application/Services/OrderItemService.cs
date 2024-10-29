@@ -17,9 +17,11 @@ public class OrderItemService : IOrderItemService
 
     public async Task<OrderItemReadDto> CreateOrderItem(OrderItemCreateDto orderItemCreateDto)
     {
+        var orderItemId = Guid.NewGuid();
+
         var orderItem = new OrderItem
         {
-            Id = Guid.NewGuid(),
+            Id = orderItemId,
             Price = orderItemCreateDto.Price,
             Quantity = orderItemCreateDto.Quantity,
             SpecialInstructions = orderItemCreateDto.SpecialInstructions,
