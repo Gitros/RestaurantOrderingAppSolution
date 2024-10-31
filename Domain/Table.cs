@@ -6,6 +6,7 @@ public class Table
     public string Name { get; set; }
     public int NumberOfPeople { get; set; }
     public bool IsOccupied { get; set; }
+    public bool IsDeleted { get; set; }
 
     public List<Order> Orders { get; set; } = new List<Order>();
 }
