@@ -23,7 +23,7 @@ public class MenuTypeService : IMenuTypeService
             Name = menuTypeCreateDto.Name,
         };
 
-        var result = await _orderingContext.Menus.AddAsync(menuType);
+        var result = await _orderingContext.MenuTypes.AddAsync(menuType);
         await _orderingContext.SaveChangesAsync();
 
         var createdMenuType = new MenuTypeReadDto
@@ -37,18 +37,18 @@ public class MenuTypeService : IMenuTypeService
 
     public async Task DeleteMenuType(Guid id)
     {
-        var menuTypeToDelete = await _orderingContext.Menus.FindAsync(id);
+        var menuTypeToDelete = await _orderingContext.MenuTypes.FindAsync(id);
 
         if (menuTypeToDelete != null)
         {
-            _orderingContext.Menus.Remove(menuTypeToDelete);
+            _orderingContext.MenuTypes.Remove(menuTypeToDelete);
             await _orderingContext.SaveChangesAsync();
         }
     }
 
     public async Task<List<MenuTypeReadDto>> GetAllMenuTypes()
     {
-        var menuTypes = await _orderingContext.Menus
+        var menuTypes = await _orderingContext.MenuTypes
             .Select(menu => new MenuTypeReadDto
             {
                 Id = menu.Id,
@@ -61,7 +61,7 @@ public class MenuTypeService : IMenuTypeService
 
     public async Task<MenuTypeReadDto> GetMenuType(Guid id)
     {
-        var menuType = await _orderingContext.Menus.FirstOrDefaultAsync(x => x.Id == id);
+        var menuType = await _orderingContext.MenuTypes.FirstOrDefaultAsync(x => x.Id == id);
 
         return new MenuTypeReadDto
         {
@@ -72,7 +72,7 @@ public class MenuTypeService : IMenuTypeService
 
     public async Task<MenuTypeReadDto> UpdateMenuType(MenuTypeUpdateDto menuTypeUpdateDto, Guid id)
     {
-        var menuTypeToUpdate = await _orderingContext.Menus.FirstOrDefaultAsync(x => x.Id == id);
+        var menuTypeToUpdate = await _orderingContext.MenuTypes.FirstOrDefaultAsync(x => x.Id == id);
 
         menuTypeToUpdate.Name = menuTypeUpdateDto.Name;
 

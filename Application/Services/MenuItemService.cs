@@ -17,7 +17,7 @@ public class MenuItemService : IMenuItemService
 
     public async Task<MenuItemReadDto> CreateMenuItem(MenuItemCreateDto menuItemCreateDto)
     {
-        var menuTypeExists = await _orderingContext.Menus.AnyAsync(mt => mt.Id == menuItemCreateDto.MenuTypeId);
+        var menuTypeExists = await _orderingContext.MenuTypes.AnyAsync(mt => mt.Id == menuItemCreateDto.MenuTypeId);
 
         if (!menuTypeExists)
         {

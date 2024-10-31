@@ -11,7 +11,7 @@ public class RestaurantOrderingContext : DbContext
 
     public DbSet<Order> Orders { get; set; }
     public DbSet<OrderItem> OrderItems { get; set; }
-    public DbSet<MenuType> Menus { get; set; }
+    public DbSet<MenuType> MenuTypes { get; set; }
     public DbSet<MenuItem> MenuItems { get; set; }
     public DbSet<Table> Tables { get; set; }
 
