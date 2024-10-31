@@ -3,7 +3,6 @@ using System;
 using Infrastructure.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,11 +10,9 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Database.Migrations
 {
     [DbContext(typeof(RestaurantOrderingContext))]
-    [Migration("20241024155459_InitialCreate")]
-    partial class InitialCreate
+    partial class RestaurantOrderingContextModelSnapshot : ModelSnapshot
     {
-        /// <inheritdoc />
-        protected override void BuildTargetModel(ModelBuilder modelBuilder)
+        protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.10");
@@ -23,6 +20,7 @@ namespace Infrastructure.Database.Migrations
             modelBuilder.Entity("Domain.MenuItem", b =>
                 {
                     b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Description")
@@ -39,6 +37,8 @@ namespace Infrastructure.Database.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("MenuTypeId");
+
                     b.ToTable("MenuItems");
                 });
 
@@ -53,7 +53,7 @@ namespace Infrastructure.Database.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Menus");
+                    b.ToTable("MenuTypes");
                 });
 
             modelBuilder.Entity("Domain.Order", b =>
@@ -84,6 +84,7 @@ namespace Infrastructure.Database.Migrations
             modelBuilder.Entity("Domain.OrderItem", b =>
                 {
                     b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT");
 
                     b.Property<Guid>("MenuItemId")
@@ -105,6 +106,8 @@ namespace Infrastructure.Database.Migrations
 
                     b.HasIndex("MenuItemId");
 
+                    b.HasIndex("OrderId");
+
                     b.ToTable("OrderItems");
                 });
 
@@ -123,9 +126,6 @@ namespace Infrastructure.Database.Migrations
                     b.Property<int>("NumberOfPeople")
                         .HasColumnType("INTEGER");
 
-                    b.Property<string>("OrderIds")
-                        .HasColumnType("TEXT");
-
                     b.HasKey("Id");
 
                     b.ToTable("Tables");
@@ -135,7 +135,7 @@ namespace Infrastructure.Database.Migrations
                 {
                     b.HasOne("Domain.MenuType", "MenuType")
                         .WithMany("MenuItems")
-                        .HasForeignKey("Id")
+                        .HasForeignKey("MenuTypeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -155,15 +155,15 @@ namespace Infrastructure.Database.Migrations
 
             modelBuilder.Entity("Domain.OrderItem", b =>
                 {
-                    b.HasOne("Domain.Order", "Order")
-                        .WithMany("OrderItems")
-                        .HasForeignKey("Id")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("Domain.MenuItem", "MenuItem")
                         .WithMany()
                         .HasForeignKey("MenuItemId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Domain.Order", "Order")
+                        .WithMany("OrderItems")
+                        .HasForeignKey("OrderId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
