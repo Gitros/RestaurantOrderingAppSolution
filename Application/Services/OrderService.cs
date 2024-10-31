@@ -67,6 +67,8 @@ public class OrderService : IOrderService
             .Include(o => o.OrderItems)
             .FirstOrDefaultAsync(o => o.Id == id);
 
+        if (order == null) return null;
+
         return new OrderReadDto
         {
             Id = order.Id,
@@ -86,23 +88,74 @@ public class OrderService : IOrderService
         };
     }
 
-    public Task<List<OrderReadDto>> GetAllOrders()
+    public async Task<List<OrderReadDto>> GetAllOrders()
     {
-        throw new NotImplementedException();
+        var orders = await _orderingContext.Orders
+            .Select(orders => new OrderReadDto
+            {
+                Id = orders.Id,
+                OrderDateTime = orders.OrderDateTime,
+                TotalAmount = orders.TotalAmount,
+                OrderStatus = orders.OrderStatus,
+                TableId = orders.TableId,
+                OrderItems = orders.OrderItems.Select(oi => new OrderItemReadDto
+                {
+                    Id = oi.Id,
+                    Price = oi.Price,
+                    Quantity = oi.Quantity,
+                    SpecialInstructions = oi.SpecialInstructions,
+                    OrderId = oi.OrderId,
+                    MenuItemId = oi.MenuItemId
+                }).ToList()
+            }).ToListAsync();
+
+        return orders;
     }
 
-    public Task<OrderReadDto> UpdateOrder(OrderUpdateDto orderUpdateDto, Guid id)
+    public async Task<OrderReadDto> UpdateOrder(OrderUpdateDto orderUpdateDto, Guid id)
     {
-        throw new NotImplementedException();
+        var orderToUpdate = await _orderingContext.Orders.FindAsync(id);
+
+        orderToUpdate.TotalAmount = orderUpdateDto.TotalAmount;
+        orderToUpdate.OrderStatus = orderUpdateDto.OrderStatus;
+        orderToUpdate.TableId = orderUpdateDto.TableId;
+
+        await _orderingContext.SaveChangesAsync();
+
+        return new OrderReadDto
+        {
+            Id = id,
+            TotalAmount = orderUpdateDto.TotalAmount,
+            OrderStatus = orderUpdateDto.OrderStatus,
+            TableId = orderToUpdate.TableId
+        };
     }
 
-    public Task<OrderReadDto> UpdateOrderStatus(OrderStatus newStatus, Guid id)
+    public async Task<OrderReadDto> UpdateOrderStatus(OrderStatus newStatus, Guid id)
     {
-        throw new NotImplementedException();
+        var orderStatus = await _orderingContext.Orders.FindAsync(id);
+
+        orderStatus.OrderStatus = newStatus;
+
+        await _orderingContext.SaveChangesAsync();
+
+        return new OrderReadDto
+        {
+            Id = id,
+            TotalAmount = orderStatus.TotalAmount,
+            OrderStatus = orderStatus.OrderStatus,
+            TableId = orderStatus.TableId
+        };
     }
-    public Task DeleteOrder(Guid id)
+    public async Task DeleteOrder(Guid id)
     {
-        throw new NotImplementedException();
+        var orderToDelete = await _orderingContext.Orders.FindAsync(id);
+
+        if(orderToDelete != null)
+        {
+            _orderingContext.Orders.Remove(orderToDelete);
+            await _orderingContext.SaveChangesAsync();
+        }
     }
 
 }
