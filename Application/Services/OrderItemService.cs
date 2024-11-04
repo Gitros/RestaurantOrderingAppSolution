@@ -25,7 +25,6 @@ public class OrderItemService : IOrderItemService
             Price = orderItemCreateDto.Price,
             Quantity = orderItemCreateDto.Quantity,
             SpecialInstructions = orderItemCreateDto.SpecialInstructions,
-            OrderId = orderItemCreateDto.OrderId,
             MenuItemId = orderItemCreateDto.MenuItemId
         };
 
@@ -38,7 +37,6 @@ public class OrderItemService : IOrderItemService
             Price = result.Entity.Price,
             Quantity = result.Entity.Quantity,
             SpecialInstructions = result.Entity.SpecialInstructions,
-            OrderId = result.Entity.OrderId,
             MenuItemId = result.Entity.MenuItemId
         };
 

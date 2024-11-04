@@ -1,4 +1,5 @@
 using Application.Contracts;
+using Application.Core;
 using Application.Services;
 using Infrastructure.Database;
 using Microsoft.EntityFrameworkCore;
@@ -21,6 +22,8 @@ builder.Services.AddDbContext<RestaurantOrderingContext>(opt =>
 {
     opt.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
+
+builder.Services.AddAutoMapper(typeof(MappingProfiles).Assembly);
 
 var app = builder.Build();
 

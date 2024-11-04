@@ -1,4 +1,5 @@
 ﻿using Application.Contracts;
+using Application.Dtos.Common;
 using Application.Dtos.Orders;
 using Domain;
 using Microsoft.AspNetCore.Mvc;
@@ -17,7 +18,7 @@ public class OrderController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<OrderReadDto> CreateOrder(OrderCreateDto orderCreateDto) => 
+    public async Task<CreateResultDto<OrderReadDto>> CreateOrder(OrderCreateDto orderCreateDto) => 
         await _orderService.CreateOrder(orderCreateDto);
 
     [HttpGet("{id}")]

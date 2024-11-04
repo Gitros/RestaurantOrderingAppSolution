@@ -1,64 +1,71 @@
 ﻿using Application.Contracts;
+using Application.Dtos.Common;
 using Application.Dtos.OrderItems;
 using Application.Dtos.Orders;
+using AutoMapper;
 using Domain;
 using Infrastructure.Database;
 using Microsoft.EntityFrameworkCore;
+using System.Net;
 
 namespace Application.Services;
 
 public class OrderService : IOrderService
 {
     private RestaurantOrderingContext _orderingContext;
+    private readonly IMapper _mapper;
 
-    public OrderService(RestaurantOrderingContext orderingContext)
+    public OrderService(RestaurantOrderingContext orderingContext, IMapper mapper)
     {
         _orderingContext = orderingContext;
+        _mapper = mapper;
     }
 
-    public async Task<OrderReadDto> CreateOrder(OrderCreateDto orderCreateDto)
+    public async Task<CreateResultDto<OrderReadDto>> CreateOrder(OrderCreateDto orderCreateDto)
     {
-        var orderId = Guid.NewGuid();
-        var order = new Order
+        try
         {
-            Id = orderId,
-            OrderDateTime = orderCreateDto.OrderDateTime,
-            TotalAmount = orderCreateDto.TotalAmount,
-            OrderStatus = orderCreateDto.OrderStatus,
-            TableId = orderCreateDto.TableId,
-            OrderItems = orderCreateDto.OrderItems.Select(oi => new OrderItem
+            if(!ValidateOrderItems())
             {
-                Id = oi.Id,
-                Price = oi.Price,
-                Quantity = oi.Quantity,
-                OrderId = orderId,
-                SpecialInstructions = oi.SpecialInstructions,
-                MenuItemId = oi.MenuItemId
-            }).ToList()
-        };
+                return new CreateResultDto<OrderReadDto>
+                {
+                    ErrorMessage = "Order items invalid",
+                    HttpStatusCode = HttpStatusCode.BadRequest,
+                };
+            }
 
-        var result = await _orderingContext.Orders.AddAsync(order);
-        await _orderingContext.SaveChangesAsync();
+            var order = _mapper.Map<Order>(orderCreateDto);
 
-        var createdOrder = new OrderReadDto
+            foreach(var item in order.OrderItems)
+            {
+                item.OrderId = order.Id;
+            }
+
+            await _orderingContext.Orders.AddAsync(order);
+            await _orderingContext.SaveChangesAsync();
+
+            var createdOrder = _mapper.Map<OrderReadDto>(order);
+
+            return new CreateResultDto<OrderReadDto>
+            {
+                EntityResult = createdOrder,
+                HttpStatusCode = HttpStatusCode.Created
+            };
+        } 
+        catch (Exception ex)
         {
-            Id = result.Entity.Id,
-            OrderDateTime = result.Entity.OrderDateTime,
-            TotalAmount = result.Entity.TotalAmount,
-            OrderStatus = result.Entity.OrderStatus,
-            TableId = result.Entity.TableId,
-            OrderItems = result.Entity.OrderItems.Select(oi => new OrderItemReadDto
+            return new CreateResultDto<OrderReadDto>
             {
-                Id = oi.Id,
-                Price = oi.Price,
-                Quantity = oi.Quantity,
-                SpecialInstructions = oi.SpecialInstructions,
-                OrderId= oi.OrderId,
-                MenuItemId = oi.MenuItemId
-            }).ToList()
-        };
+                IsSuccess = false,
+                ErrorMessage = ex.Message,
+                HttpStatusCode = HttpStatusCode.InternalServerError
+            };
+        }
+    }
 
-        return createdOrder;
+    private bool ValidateOrderItems()
+    {
+        return true;
     }
 
     public async Task<OrderReadDto> GetOrder(Guid id)
