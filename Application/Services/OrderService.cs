@@ -21,17 +21,14 @@ public class OrderService : IOrderService
         _mapper = mapper;
     }
 
-    public async Task<CreateResultDto<OrderReadDto>> CreateOrder(OrderCreateDto orderCreateDto)
+    public async Task<ResultDto<OrderReadDto>> CreateOrder(OrderCreateDto orderCreateDto)
     {
         try
         {
             if(!ValidateOrderItems())
             {
-                return new CreateResultDto<OrderReadDto>
-                {
-                    ErrorMessage = "Order items invalid",
-                    HttpStatusCode = HttpStatusCode.BadRequest,
-                };
+                return ResultDto<OrderReadDto>
+                    .Failure("Order items invalid", HttpStatusCode.BadRequest);
             }
 
             var order = _mapper.Map<Order>(orderCreateDto);
@@ -46,20 +43,13 @@ public class OrderService : IOrderService
 
             var createdOrder = _mapper.Map<OrderReadDto>(order);
 
-            return new CreateResultDto<OrderReadDto>
-            {
-                EntityResult = createdOrder,
-                HttpStatusCode = HttpStatusCode.Created
-            };
+            return ResultDto<OrderReadDto>
+                .Success(createdOrder, HttpStatusCode.Created);
         } 
         catch (Exception ex)
         {
-            return new CreateResultDto<OrderReadDto>
-            {
-                IsSuccess = false,
-                ErrorMessage = ex.Message,
-                HttpStatusCode = HttpStatusCode.InternalServerError
-            };
+            return ResultDto<OrderReadDto>
+                .Failure($"An error occurred: {ex.Message}", HttpStatusCode.InternalServerError);
         }
     }
 
@@ -68,56 +58,75 @@ public class OrderService : IOrderService
         return true;
     }
 
-    public async Task<OrderReadDto> GetOrder(Guid id)
+    public async Task<ResultDto<OrderReadDto>> GetOrder(Guid id)
     {
         var order = await _orderingContext.Orders
             .Include(o => o.OrderItems)
             .FirstOrDefaultAsync(o => o.Id == id);
 
-        if (order == null) return null;
+        if (order == null)
+        {
+            return ResultDto<OrderReadDto>.Failure("Order not found", HttpStatusCode.NotFound);
+        }
 
-        return _mapper.Map<OrderReadDto>(order);
+        var orderDto = _mapper.Map<OrderReadDto>(order);
+        return ResultDto<OrderReadDto>.Success(orderDto, HttpStatusCode.OK);
     }
 
-    public async Task<List<OrderReadDto>> GetAllOrders()
+    public async Task<ResultDto<List<OrderReadDto>>> GetAllOrders()
     {
         var orders = await _orderingContext.Orders
             .Include(o => o.OrderItems)
             .ToListAsync();
 
-        return _mapper.Map<List<OrderReadDto>>(orders);
+        var ordersDto = _mapper.Map<List<OrderReadDto>>(orders);
+        return ResultDto<List<OrderReadDto>>.Success(ordersDto, HttpStatusCode.OK);
     }
 
-    public async Task<OrderReadDto> UpdateOrder(OrderUpdateDto orderUpdateDto, Guid id)
+    public async Task<ResultDto<OrderReadDto>> UpdateOrder(OrderUpdateDto orderUpdateDto, Guid id)
     {
         var orderToUpdate = await _orderingContext.Orders.FindAsync(id);
 
-        _mapper.Map(orderUpdateDto, orderToUpdate);
+        if (orderToUpdate == null)
+        {
+            return ResultDto<OrderReadDto>.Failure("Order not found", HttpStatusCode.NotFound);
+        }
 
+        _mapper.Map(orderUpdateDto, orderToUpdate);
         await _orderingContext.SaveChangesAsync();
 
-        return _mapper.Map<OrderReadDto>(orderToUpdate);
+        var updatedOrderDto = _mapper.Map<OrderReadDto>(orderToUpdate);
+        return ResultDto<OrderReadDto>.Success(updatedOrderDto, HttpStatusCode.OK);
     }
 
-    public async Task<OrderReadDto> UpdateOrderStatus(OrderStatus newStatus, Guid id)
+    public async Task<ResultDto<OrderReadDto>> UpdateOrderStatus(OrderStatus newStatus, Guid id)
     {
         var order = await _orderingContext.Orders.FindAsync(id);
 
-        order.OrderStatus = newStatus;
+        if (order == null)
+        {
+            return ResultDto<OrderReadDto>.Failure("Order not found", HttpStatusCode.NotFound);
+        }
 
+        order.OrderStatus = newStatus;
         await _orderingContext.SaveChangesAsync();
 
-        return _mapper.Map<OrderReadDto>(order);
+        var updatedOrderDto = _mapper.Map<OrderReadDto>(order);
+        return ResultDto<OrderReadDto>.Success(updatedOrderDto, HttpStatusCode.OK);
     }
-    public async Task DeleteOrder(Guid id)
+
+    public async Task<ResultDto<string>> DeleteOrder(Guid id)
     {
         var orderToDelete = await _orderingContext.Orders.FindAsync(id);
 
-        if(orderToDelete != null)
+        if(orderToDelete == null)
         {
-            _orderingContext.Orders.Remove(orderToDelete);
-            await _orderingContext.SaveChangesAsync();
+            return ResultDto<string>.Failure("Order not found", HttpStatusCode.NotFound);
         }
-    }
 
+        _orderingContext.Orders.Remove(orderToDelete);
+        await _orderingContext.SaveChangesAsync();
+
+        return ResultDto<string>.Success("Order deleted successfully", HttpStatusCode.NoContent);
+    }
 }
