@@ -9,6 +9,7 @@ public class MappingProfiles : Profile
 {
     public MappingProfiles()
     {
+        // Mapping for order
         CreateMap<Order, OrderReadDto>()
             .ForMember(dest => dest.OrderItems, opt => opt.MapFrom(src => src.OrderItems));
 
@@ -18,5 +19,7 @@ public class MappingProfiles : Profile
            .ForMember(dest => dest.OrderItems, opt => opt.MapFrom(src => src.OrderItems));
 
         CreateMap<OrderItemCreateDto, OrderItem>();
+
+        CreateMap<OrderUpdateDto, Order>();
     }
 }

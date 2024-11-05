@@ -12,7 +12,7 @@ namespace Application.Services;
 
 public class OrderService : IOrderService
 {
-    private RestaurantOrderingContext _orderingContext;
+    private readonly RestaurantOrderingContext _orderingContext;
     private readonly IMapper _mapper;
 
     public OrderService(RestaurantOrderingContext orderingContext, IMapper mapper)
@@ -76,83 +76,38 @@ public class OrderService : IOrderService
 
         if (order == null) return null;
 
-        return new OrderReadDto
-        {
-            Id = order.Id,
-            OrderDateTime = order.OrderDateTime,
-            TotalAmount = order.TotalAmount,
-            OrderStatus = order.OrderStatus,
-            TableId = order.TableId,
-            OrderItems = order.OrderItems.Select(oi => new OrderItemReadDto
-            {
-                Id = oi.Id,
-                Price = oi.Price,
-                Quantity = oi.Quantity,
-                SpecialInstructions = oi.SpecialInstructions,
-                OrderId = oi.OrderId,
-                MenuItemId = oi.MenuItemId
-            }).ToList()
-        };
+        return _mapper.Map<OrderReadDto>(order);
     }
 
     public async Task<List<OrderReadDto>> GetAllOrders()
     {
         var orders = await _orderingContext.Orders
-            .Select(orders => new OrderReadDto
-            {
-                Id = orders.Id,
-                OrderDateTime = orders.OrderDateTime,
-                TotalAmount = orders.TotalAmount,
-                OrderStatus = orders.OrderStatus,
-                TableId = orders.TableId,
-                OrderItems = orders.OrderItems.Select(oi => new OrderItemReadDto
-                {
-                    Id = oi.Id,
-                    Price = oi.Price,
-                    Quantity = oi.Quantity,
-                    SpecialInstructions = oi.SpecialInstructions,
-                    OrderId = oi.OrderId,
-                    MenuItemId = oi.MenuItemId
-                }).ToList()
-            }).ToListAsync();
+            .Include(o => o.OrderItems)
+            .ToListAsync();
 
-        return orders;
+        return _mapper.Map<List<OrderReadDto>>(orders);
     }
 
     public async Task<OrderReadDto> UpdateOrder(OrderUpdateDto orderUpdateDto, Guid id)
     {
         var orderToUpdate = await _orderingContext.Orders.FindAsync(id);
 
-        orderToUpdate.TotalAmount = orderUpdateDto.TotalAmount;
-        orderToUpdate.OrderStatus = orderUpdateDto.OrderStatus;
-        orderToUpdate.TableId = orderUpdateDto.TableId;
+        _mapper.Map(orderUpdateDto, orderToUpdate);
 
         await _orderingContext.SaveChangesAsync();
 
-        return new OrderReadDto
-        {
-            Id = id,
-            TotalAmount = orderUpdateDto.TotalAmount,
-            OrderStatus = orderUpdateDto.OrderStatus,
-            TableId = orderToUpdate.TableId
-        };
+        return _mapper.Map<OrderReadDto>(orderToUpdate);
     }
 
     public async Task<OrderReadDto> UpdateOrderStatus(OrderStatus newStatus, Guid id)
     {
-        var orderStatus = await _orderingContext.Orders.FindAsync(id);
+        var order = await _orderingContext.Orders.FindAsync(id);
 
-        orderStatus.OrderStatus = newStatus;
+        order.OrderStatus = newStatus;
 
         await _orderingContext.SaveChangesAsync();
 
-        return new OrderReadDto
-        {
-            Id = id,
-            TotalAmount = orderStatus.TotalAmount,
-            OrderStatus = orderStatus.OrderStatus,
-            TableId = orderStatus.TableId
-        };
+        return _mapper.Map<OrderReadDto>(order);
     }
     public async Task DeleteOrder(Guid id)
     {

@@ -1,5 +1,4 @@
-﻿using Application.Dtos.OrderItems;
-using Domain;
+﻿using Domain;
 
 namespace Application.Dtos.Orders;
 
