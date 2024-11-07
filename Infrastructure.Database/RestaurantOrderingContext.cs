@@ -19,19 +19,36 @@ public class RestaurantOrderingContext : DbContext
     {
         base.OnModelCreating(modelBuilder);
 
+        // Global Query Filters for Soft Delete
+        modelBuilder.Entity<Order>().HasQueryFilter(o => !o.IsDeleted);
+        modelBuilder.Entity<OrderItem>().HasQueryFilter(oi => !oi.IsDeleted);
+        modelBuilder.Entity<MenuType>().HasQueryFilter(mt => !mt.IsDeleted);
+        modelBuilder.Entity<MenuItem>().HasQueryFilter(mi => !mi.IsDeleted);
+        modelBuilder.Entity<Table>().HasQueryFilter(t => !t.IsDeleted);
+
+        // Define relationships with Restrict DeleteBehavior to prevent cascading deletions
         modelBuilder.Entity<Order>()
             .HasMany(o => o.OrderItems)
             .WithOne(oi => oi.Order)
-            .HasForeignKey(oi => oi.OrderId);
+            .HasForeignKey(oi => oi.OrderId)
+            .OnDelete(DeleteBehavior.Restrict);
 
         modelBuilder.Entity<MenuType>()
             .HasMany(m => m.MenuItems)
             .WithOne(mi => mi.MenuType)
-            .HasForeignKey(mi => mi.MenuTypeId);
+            .HasForeignKey(mi => mi.MenuTypeId)
+            .OnDelete(DeleteBehavior.Restrict);
 
         modelBuilder.Entity<Table>()
             .HasMany(t => t.Orders)
             .WithOne(o => o.Table)
-            .HasForeignKey(o => o.TableId);
+            .HasForeignKey(o => o.TableId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<OrderItem>()
+            .HasOne(oi => oi.MenuItem)
+            .WithMany()
+            .HasForeignKey(oi => oi.MenuItemId)
+            .OnDelete(DeleteBehavior.Restrict);
     }
 }

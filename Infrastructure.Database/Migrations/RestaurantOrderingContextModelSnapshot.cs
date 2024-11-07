@@ -26,6 +26,12 @@ namespace Infrastructure.Database.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("TEXT");
 
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("IsUsed")
+                        .HasColumnType("INTEGER");
+
                     b.Property<Guid>("MenuTypeId")
                         .HasColumnType("TEXT");
 
@@ -48,6 +54,12 @@ namespace Infrastructure.Database.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT");
 
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("IsUsed")
+                        .HasColumnType("INTEGER");
+
                     b.Property<string>("Name")
                         .HasColumnType("TEXT");
 
@@ -61,6 +73,12 @@ namespace Infrastructure.Database.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("IsUsed")
+                        .HasColumnType("INTEGER");
 
                     b.Property<DateTime>("OrderDateTime")
                         .HasColumnType("TEXT");
@@ -86,6 +104,12 @@ namespace Infrastructure.Database.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("IsUsed")
+                        .HasColumnType("INTEGER");
 
                     b.Property<Guid>("MenuItemId")
                         .HasColumnType("TEXT");
@@ -117,7 +141,13 @@ namespace Infrastructure.Database.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT");
 
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("INTEGER");
+
                     b.Property<bool>("IsOccupied")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("IsUsed")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Name")
@@ -136,7 +166,7 @@ namespace Infrastructure.Database.Migrations
                     b.HasOne("Domain.MenuType", "MenuType")
                         .WithMany("MenuItems")
                         .HasForeignKey("MenuTypeId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("MenuType");
@@ -147,7 +177,7 @@ namespace Infrastructure.Database.Migrations
                     b.HasOne("Domain.Table", "Table")
                         .WithMany("Orders")
                         .HasForeignKey("TableId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Table");
@@ -158,13 +188,13 @@ namespace Infrastructure.Database.Migrations
                     b.HasOne("Domain.MenuItem", "MenuItem")
                         .WithMany()
                         .HasForeignKey("MenuItemId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("Domain.Order", "Order")
                         .WithMany("OrderItems")
                         .HasForeignKey("OrderId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("MenuItem");

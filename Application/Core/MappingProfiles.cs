@@ -1,4 +1,6 @@
-﻿using Application.Dtos.OrderItems;
+﻿using Application.Dtos.MenuItems;
+using Application.Dtos.MenuTypes;
+using Application.Dtos.OrderItems;
 using Application.Dtos.Orders;
 using AutoMapper;
 using Domain;
@@ -21,5 +23,11 @@ public class MappingProfiles : Profile
         CreateMap<OrderItemCreateDto, OrderItem>();
 
         CreateMap<OrderUpdateDto, Order>();
+
+        // Mapping for Menu
+        CreateMap<MenuType, MenuTypeReadDto>()
+            .ForMember(dest => dest.MenuItems, opt => opt.MapFrom(src => src.MenuItems));
+
+        CreateMap<MenuItem, MenuItemReadDto>();
     }
 }

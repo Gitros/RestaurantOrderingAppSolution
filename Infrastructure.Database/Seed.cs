@@ -1,5 +1,4 @@
 ﻿using Domain;
-using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Database;
 
@@ -11,10 +10,10 @@ public class Seed
             !context.Orders.Any() && !context.OrderItems.Any())
         {
             // Define MenuTypes
-            var przystawkiType = new MenuType { Id = Guid.NewGuid(), Name = "Przystawki" };
-            var pizzaVegeType = new MenuType { Id = Guid.NewGuid(), Name = "Pizza Vege" };
-            var pizzaSzynkaType = new MenuType { Id = Guid.NewGuid(), Name = "Pizza z Szynką / Szynką Parmeńską" };
-            var pizzaSalamiType = new MenuType { Id = Guid.NewGuid(), Name = "Pizza z Salami / Salami Picante" };
+            var przystawkiType = new MenuType { Id = Guid.NewGuid(), Name = "Przystawki", IsUsed = true, IsDeleted = false };
+            var pizzaVegeType = new MenuType { Id = Guid.NewGuid(), Name = "Pizza Vege", IsUsed = true, IsDeleted = false };
+            var pizzaSzynkaType = new MenuType { Id = Guid.NewGuid(), Name = "Pizza z Szynką / Szynką Parmeńską", IsUsed = true, IsDeleted = false };
+            var pizzaSalamiType = new MenuType { Id = Guid.NewGuid(), Name = "Pizza z Salami / Salami Picante", IsUsed = true, IsDeleted = false };
 
             // Define MenuItems
             var menuItem1 = new MenuItem
@@ -23,7 +22,9 @@ public class Seed
                 Name = "Podplomyki 1",
                 Description = "ser, oliwa czosnkowa, rukola",
                 Price = 20.00M,
-                MenuTypeId = przystawkiType.Id
+                MenuTypeId = przystawkiType.Id,
+                IsUsed = true,
+                IsDeleted = false
             };
             var menuItem2 = new MenuItem
             {
@@ -31,7 +32,9 @@ public class Seed
                 Name = "Pizza Vege 1",
                 Description = "Sos pomidorowy, mozzarella, bazylia",
                 Price = 30.00M,
-                MenuTypeId = pizzaVegeType.Id
+                MenuTypeId = pizzaVegeType.Id,
+                IsUsed = true,
+                IsDeleted = false
             };
             var menuItem3 = new MenuItem
             {
@@ -39,12 +42,14 @@ public class Seed
                 Name = "Pizza Szynka 1",
                 Description = "Sos pomidorowy, mozzarella, szynka parmeńska, pomidorki koktajlowe, parmezan, rukola",
                 Price = 42.00M,
-                MenuTypeId = pizzaSzynkaType.Id
+                MenuTypeId = pizzaSzynkaType.Id,
+                IsUsed = true,
+                IsDeleted = false
             };
 
             // Define Tables
-            var table1 = new Table { Id = Guid.NewGuid(), Name = "Table 1", NumberOfPeople = 4, IsOccupied = false };
-            var table2 = new Table { Id = Guid.NewGuid(), Name = "Table 2", NumberOfPeople = 2, IsOccupied = true };
+            var table1 = new Table { Id = Guid.NewGuid(), Name = "Table 1", NumberOfPeople = 4, IsOccupied = false, IsUsed = true, IsDeleted = false };
+            var table2 = new Table { Id = Guid.NewGuid(), Name = "Table 2", NumberOfPeople = 2, IsOccupied = true, IsUsed = true, IsDeleted = false };
 
             // Define Orders
             var order1 = new Order
@@ -53,7 +58,9 @@ public class Seed
                 OrderDateTime = DateTime.Now.AddHours(-1),
                 TotalAmount = menuItem1.Price * 2 + menuItem2.Price,
                 OrderStatus = OrderStatus.Pending,
-                TableId = table1.Id
+                TableId = table1.Id,
+                IsUsed = true,
+                IsDeleted = false
             };
             var order2 = new Order
             {
@@ -61,7 +68,9 @@ public class Seed
                 OrderDateTime = DateTime.Now.AddHours(-2),
                 TotalAmount = menuItem3.Price,
                 OrderStatus = OrderStatus.InProgress,
-                TableId = table2.Id
+                TableId = table2.Id,
+                IsUsed = true,
+                IsDeleted = false
             };
 
             // Define OrderItems
@@ -72,7 +81,9 @@ public class Seed
                 Quantity = 2,
                 SpecialInstructions = "Extra cheese",
                 OrderId = order1.Id,
-                MenuItemId = menuItem1.Id
+                MenuItemId = menuItem1.Id,
+                IsUsed = true,
+                IsDeleted = false
             };
             var orderItem2 = new OrderItem
             {
@@ -81,7 +92,9 @@ public class Seed
                 Quantity = 1,
                 SpecialInstructions = "No basil",
                 OrderId = order1.Id,
-                MenuItemId = menuItem2.Id
+                MenuItemId = menuItem2.Id,
+                IsUsed = true,
+                IsDeleted = false
             };
             var orderItem3 = new OrderItem
             {
@@ -90,7 +103,9 @@ public class Seed
                 Quantity = 1,
                 SpecialInstructions = "Extra arugula",
                 OrderId = order2.Id,
-                MenuItemId = menuItem3.Id
+                MenuItemId = menuItem3.Id,
+                IsUsed = true,
+                IsDeleted = false
             };
 
             // Add entities to context

@@ -6,6 +6,8 @@ public class Order
     public DateTime OrderDateTime { get; set; }
     public decimal TotalAmount { get; set; }
     public OrderStatus OrderStatus { get; set; }
+    public bool IsUsed { get; set; }
+    public bool IsDeleted { get; set; }
 
     public List<OrderItem> OrderItems { get; set; } = new List<OrderItem>();
 

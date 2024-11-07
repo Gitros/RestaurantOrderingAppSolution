@@ -1,5 +1,6 @@
 ﻿using Application.Contracts;
 using Application.Dtos.MenuItems;
+using AutoMapper;
 using Domain;
 using Infrastructure.Database;
 using Microsoft.EntityFrameworkCore;
@@ -9,10 +10,12 @@ namespace Application.Services;
 public class MenuItemService : IMenuItemService
 {
     private readonly RestaurantOrderingContext _orderingContext;
+    private readonly IMapper _mapper;
 
-    public MenuItemService(RestaurantOrderingContext orderingContext)
+    public MenuItemService(RestaurantOrderingContext orderingContext, IMapper mapper)
     {
         _orderingContext = orderingContext;
+        _mapper = mapper;
     }
 
     public async Task<MenuItemReadDto> CreateMenuItem(MenuItemCreateDto menuItemCreateDto)
