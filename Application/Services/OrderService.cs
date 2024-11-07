@@ -119,18 +119,18 @@ public class OrderService : IOrderService
         return ResultDto<OrderReadDto>.Success(updatedOrderDto, HttpStatusCode.OK);
     }
 
-    public async Task<ResultDto<string>> DeleteOrder(Guid id)
+    public async Task<ResultDto<bool>> DeleteOrder(Guid id)
     {
         var orderToDelete = await _orderingContext.Orders.FindAsync(id);
 
         if(orderToDelete == null)
         {
-            return ResultDto<string>.Failure("Order not found", HttpStatusCode.NotFound);
+            return ResultDto<bool>.Failure("ordernotfound", HttpStatusCode.NotFound);
         }
 
         _orderingContext.Orders.Remove(orderToDelete);
         await _orderingContext.SaveChangesAsync();
 
-        return ResultDto<string>.Success("Order deleted successfully", HttpStatusCode.NoContent);
+        return ResultDto<bool>.Success(true, HttpStatusCode.NoContent);
     }
 }

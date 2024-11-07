@@ -29,5 +29,7 @@ public class MappingProfiles : Profile
             .ForMember(dest => dest.MenuItems, opt => opt.MapFrom(src => src.MenuItems));
 
         CreateMap<MenuItem, MenuItemReadDto>();
+
+        CreateMap<MenuTypeCreateDto, MenuType>();
     }
 }

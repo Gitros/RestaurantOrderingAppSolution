@@ -1,4 +1,5 @@
 ﻿using Application.Contracts;
+using Application.Dtos.Common;
 using Application.Dtos.MenuTypes;
 using Microsoft.AspNetCore.Mvc;
 
@@ -16,22 +17,22 @@ public class MenuTypeController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<MenuTypeReadDto> CreateMenuType([FromBody]MenuTypeCreateDto menuTypeCreateDto) => 
+    public async Task<ResultDto<MenuTypeReadDto>> CreateMenuType([FromBody]MenuTypeCreateDto menuTypeCreateDto) => 
         await _menuTypeService.CreateMenuType(menuTypeCreateDto);
 
     [HttpGet("{id}")]
-    public async Task<MenuTypeReadDto> GetMenuType(Guid id) => 
+    public async Task<ResultDto<MenuTypeReadDto>> GetMenuType(Guid id) => 
         await _menuTypeService.GetMenuType(id);
 
     [HttpGet]
-    public async Task<List<MenuTypeReadDto>> GetAllMenuTypes() => 
+    public async Task<ResultDto<List<MenuTypeReadDto>>> GetAllMenuTypes() => 
         await _menuTypeService.GetAllMenuTypes();
 
     [HttpPut("{id}")]
-    public async Task<MenuTypeReadDto> UpdateMenuType(MenuTypeUpdateDto menuTypeUpdateDto, Guid id) => 
+    public async Task<ResultDto<MenuTypeReadDto>> UpdateMenuType(MenuTypeUpdateDto menuTypeUpdateDto, Guid id) => 
         await _menuTypeService.UpdateMenuType(menuTypeUpdateDto, id);
 
     [HttpDelete("{id}")]
-    public async Task DeleteMenuType(Guid id) => 
+    public async Task<ResultDto<bool>> DeleteMenuType(Guid id) => 
         await _menuTypeService.DeleteMenuType(id);
 }

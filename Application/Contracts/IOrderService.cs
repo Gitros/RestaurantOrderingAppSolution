@@ -11,5 +11,5 @@ public interface IOrderService
     Task<ResultDto<List<OrderReadDto>>> GetAllOrders();
     Task<ResultDto<OrderReadDto>> UpdateOrder(OrderUpdateDto orderUpdateDto, Guid id);
     Task<ResultDto<OrderReadDto>> UpdateOrderStatus(OrderStatus newStatus, Guid id);
-    Task<ResultDto<string>> DeleteOrder(Guid id);
+    Task<ResultDto<bool>> DeleteOrder(Guid id);
 }
