@@ -6,6 +6,7 @@ using AutoMapper;
 using Domain;
 using Infrastructure.Database;
 using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
 using System.Net;
 
 namespace Application.Services;
@@ -25,13 +26,16 @@ public class OrderService : IOrderService
     {
         try
         {
-            if(!ValidateOrderItems())
+            
+            //Validator.ValidateObject(orderCreateDto, new ValidationContext(orderCreateDto));
+            if (!ValidateOrderItems())
             {
                 return ResultDto<OrderReadDto>
                     .Failure("Order items invalid", HttpStatusCode.BadRequest);
             }
 
             var order = _mapper.Map<Order>(orderCreateDto);
+
 
             foreach(var item in order.OrderItems)
             {
