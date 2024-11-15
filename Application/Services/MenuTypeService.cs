@@ -1,7 +1,6 @@
 ﻿using Application.Contracts;
 using Application.Dtos.Common;
 using Application.Dtos.MenuTypes;
-using Application.Dtos.Orders;
 using AutoMapper;
 using Domain;
 using Infrastructure.Database;
@@ -72,7 +71,8 @@ public class MenuTypeService : IMenuTypeService
 
             var menuTypeDto = _mapper.Map<MenuTypeReadDto>(menuType);
 
-            return ResultDto<MenuTypeReadDto>.Success(menuTypeDto, HttpStatusCode.OK);
+            return ResultDto<MenuTypeReadDto>
+                .Success(menuTypeDto, HttpStatusCode.OK);
         }
         catch (Exception ex)
         {
@@ -93,7 +93,8 @@ public class MenuTypeService : IMenuTypeService
 
             var updatedMenuType = _mapper.Map<MenuTypeReadDto>(menuTypeToUpdate);
 
-            return ResultDto<MenuTypeReadDto>.Success(updatedMenuType, HttpStatusCode.OK);
+            return ResultDto<MenuTypeReadDto>
+                .Success(updatedMenuType, HttpStatusCode.OK);
         }
         catch (Exception ex)
         {
@@ -108,19 +109,22 @@ public class MenuTypeService : IMenuTypeService
         {
             var menuType = await _orderingContext.MenuTypes.FindAsync(id);
             if (menuType == null)
-            {
-                return ResultDto<bool>.Failure("MenuType not found.", HttpStatusCode.NotFound);
-            }
+                return ResultDto<bool>
+                    .Failure("MenuType not found.", HttpStatusCode.NotFound);
 
             menuType.IsDeleted = true;
+            menuType.IsUsed = false;
+
             _orderingContext.MenuTypes.Update(menuType);
             await _orderingContext.SaveChangesAsync();
 
-            return ResultDto<bool>.Success(true, HttpStatusCode.OK);
+            return ResultDto<bool>
+                .Success(true, HttpStatusCode.OK);
         }
         catch (Exception ex)
         {
-            return ResultDto<bool>.Failure($"An error occurred: {ex.Message}", HttpStatusCode.InternalServerError);
+            return ResultDto<bool>
+                .Failure($"An error occurred: {ex.Message}", HttpStatusCode.InternalServerError);
         }
     }
 }

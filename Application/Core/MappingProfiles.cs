@@ -28,10 +28,17 @@ public class MappingProfiles : Profile
         CreateMap<MenuType, MenuTypeReadDto>()
             .ForMember(dest => dest.MenuItems, opt => opt.MapFrom(src => src.MenuItems));
 
-        CreateMap<MenuItem, MenuItemReadDto>();
+        CreateMap<MenuItem, MenuItemReadDto>()
+            .ForMember(dest => dest.MenuTypeName, opt => opt.MapFrom(src => src.MenuType.Name));
 
-        CreateMap<MenuTypeCreateDto, MenuType>();
+        CreateMap<MenuTypeCreateDto, MenuType>()
+            .ForMember(dest => dest.IsDeleted, opt => opt.MapFrom(src => false));
 
         CreateMap<MenuTypeUpdateDto, MenuType>();
+
+        CreateMap<MenuItemCreateDto, MenuItem>()
+            .ForMember(dest => dest.IsDeleted, opt => opt.MapFrom(src => false));
+
+        CreateMap<MenuItemUpdateDto, MenuItem>();
     }
 }
