@@ -87,7 +87,8 @@ public class MenuTypeService : IMenuTypeService
         {
             var menuTypeToUpdate = await _orderingContext.MenuTypes.FindAsync(id);
 
-            _mapper.Map(menuTypeToUpdate, menuTypeUpdateDto);
+            _mapper.Map(menuTypeUpdateDto, menuTypeToUpdate);
+
             await _orderingContext.SaveChangesAsync();
 
             var updatedMenuType = _mapper.Map<MenuTypeReadDto>(menuTypeToUpdate);

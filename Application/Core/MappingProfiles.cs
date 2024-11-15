@@ -31,5 +31,7 @@ public class MappingProfiles : Profile
         CreateMap<MenuItem, MenuItemReadDto>();
 
         CreateMap<MenuTypeCreateDto, MenuType>();
+
+        CreateMap<MenuTypeUpdateDto, MenuType>();
     }
 }
