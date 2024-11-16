@@ -1,4 +1,6 @@
-﻿namespace Application.Dtos.OrderItems;
+﻿using Domain;
+
+namespace Application.Dtos.OrderItems;
 
 public class OrderItemReadDto
 {
@@ -9,4 +11,7 @@ public class OrderItemReadDto
 
     public Guid OrderId { get; set; }
     public Guid MenuItemId { get; set; }
+
+    public string MenuItemName { get; set; }
+    public OrderItemStatus OrderItemStatus { get; set; }
 }

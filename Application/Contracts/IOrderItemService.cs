@@ -1,12 +1,13 @@
-﻿using Application.Dtos.OrderItems;
+﻿using Application.Dtos.Common;
+using Application.Dtos.OrderItems;
 
 namespace Application.Contracts;
 
 public interface IOrderItemService
 {
-    Task<OrderItemReadDto> CreateOrderItem(OrderItemCreateDto orderItemCreateDto);
-    Task<OrderItemReadDto> GetOrderItem(Guid id);
-    Task<List<OrderItemReadDto>> GetAllOrderItems();
-    Task<OrderItemReadDto> UpdateOrderItem(OrderItemUpdateDto orderItemUpdateDto, Guid id);
-    Task DeleteOrderItem(Guid id);
+    Task<ResultDto<OrderItemReadDto>> CreateOrderItem(OrderItemCreateDto orderItemCreateDto);
+    Task<ResultDto<OrderItemReadDto>> GetOrderItem(Guid id);
+    Task<ResultDto<List<OrderItemReadDto>>> GetAllOrderItems();
+    Task<ResultDto<OrderItemReadDto>> UpdateOrderItem(OrderItemUpdateDto orderItemUpdateDto, Guid id);
+    Task<ResultDto<bool>> DeleteOrderItem(Guid id);
 }
