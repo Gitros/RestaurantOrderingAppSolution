@@ -7,4 +7,5 @@ public class OrderItemCreateDto
     public string SpecialInstructions { get; set; }
 
     public Guid MenuItemId { get; set; }
+    public Guid OrderId { get; set; }
 }

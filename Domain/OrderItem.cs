@@ -22,4 +22,5 @@ public enum OrderItemStatus
     InProgress = 1,
     ReadyToServe = 2,
     Served = 3,
+    Cancelled = 4,
 }
