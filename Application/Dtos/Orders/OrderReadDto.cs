@@ -8,7 +8,7 @@ public class OrderReadDto
     public Guid Id { get; set; }
     public DateTime OrderDateTime { get; set; }
     public decimal TotalAmount { get; set; }
-    public OrderStatus OrderStatus { get; set; }
+    public string OrderStatus { get; set; }
 
     public List<OrderItemReadDto> OrderItems { get; set; } 
 

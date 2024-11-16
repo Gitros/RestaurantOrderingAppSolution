@@ -5,7 +5,7 @@ namespace Application.Contracts;
 
 public interface IOrderItemService
 {
-    Task<ResultDto<OrderItemReadDto>> CreateOrderItem(OrderItemCreateDto orderItemCreateDto);
+    Task<ResultDto<OrderItemReadDto>> CreateOrderItem(OrderItemCreateDto orderItemCreateDto, Guid OrderId);
     Task<ResultDto<OrderItemReadDto>> GetOrderItem(Guid id);
     Task<ResultDto<List<OrderItemReadDto>>> GetAllOrderItems();
     Task<ResultDto<OrderItemReadDto>> UpdateOrderItem(OrderItemUpdateDto orderItemUpdateDto, Guid id);

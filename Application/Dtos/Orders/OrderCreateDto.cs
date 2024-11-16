@@ -10,7 +10,7 @@ public class OrderCreateDto
     public decimal TotalAmount { get; set; }
     public OrderStatus OrderStatus { get; set; }
 
-    [MinLength(1, ErrorMessage = "x")]
+    [MinLength(1, ErrorMessage = "An order must have at least one item.")]
     public List<OrderItemCreateDto> OrderItems { get; set; }
 
     public Guid TableId { get; set; }

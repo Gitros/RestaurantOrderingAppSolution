@@ -14,7 +14,8 @@ public class OrderItemMappingProfile : Profile
 
         CreateMap<OrderItemCreateDto, OrderItem>()
             .ForMember(dest => dest.Id, opt => opt.MapFrom(_ => Guid.NewGuid()))
-            .ForMember(dest => dest.OrderItemStatus, opt => opt.MapFrom(_ => OrderItemStatus.Pending));
+            .ForMember(dest => dest.OrderItemStatus, opt => opt.MapFrom(_ => OrderItemStatus.Pending))
+            .ForMember(dest => dest.OrderId, opt => opt.Ignore());
 
         CreateMap<OrderItemUpdateDto, OrderItem>();
     }

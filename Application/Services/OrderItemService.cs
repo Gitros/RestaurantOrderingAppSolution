@@ -20,11 +20,13 @@ public class OrderItemService : IOrderItemService
         _mapper = mapper;
     }
 
-    public async Task<ResultDto<OrderItemReadDto>> CreateOrderItem(OrderItemCreateDto orderItemCreateDto)
+    public async Task<ResultDto<OrderItemReadDto>> CreateOrderItem(OrderItemCreateDto orderItemCreateDto, Guid orderId)
     {
         try
         {
-            var order = await _orderingContext.Orders.FindAsync(orderItemCreateDto.OrderId);
+            var order = await _orderingContext.Orders
+                    .Include(o => o.OrderItems)
+                    .FirstOrDefaultAsync(o => o.Id == orderId);
 
             if (order == null)
                 return ResultDto<OrderItemReadDto>
@@ -37,6 +39,7 @@ public class OrderItemService : IOrderItemService
                     .Failure("Menu item not found.", HttpStatusCode.NotFound);
 
             var orderItem = _mapper.Map<OrderItem>(orderItemCreateDto);
+            orderItem.OrderId = orderId;
 
             await _orderingContext.OrderItems.AddAsync(orderItem);
             await _orderingContext.SaveChangesAsync();
