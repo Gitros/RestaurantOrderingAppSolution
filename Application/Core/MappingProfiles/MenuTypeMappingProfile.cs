@@ -4,9 +4,9 @@ using Domain;
 
 namespace Application.Core.MappingProfiles;
 
-public class MenuMappingProfile : Profile
+public class MenuTypeMappingProfile : Profile
 {
-    public MenuMappingProfile()
+    public MenuTypeMappingProfile()
     {
         CreateMap<MenuType, MenuTypeReadDto>()
             .ForMember(dest => dest.MenuItems, opt => opt.MapFrom(src => src.MenuItems));
