@@ -1,3 +1,4 @@
+using API.Middleware;
 using Application.Contracts;
 using Application.Core;
 using Application.Services;
@@ -37,6 +38,9 @@ builder.Services.AddDbContext<RestaurantOrderingContext>(opt =>
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 var app = builder.Build();
+
+// Exception Middleware
+app.UseMiddleware<ExceptionMiddleware>();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

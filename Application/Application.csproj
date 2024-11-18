@@ -15,7 +15,6 @@
     <Folder Include="Validators\MenuTypes\" />
     <Folder Include="Validators\MenuItems\" />
     <Folder Include="Validators\Tables\" />
-    <Folder Include="Validators\OrderItems\" />
   </ItemGroup>
 
   <PropertyGroup>
