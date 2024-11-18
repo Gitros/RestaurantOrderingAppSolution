@@ -83,7 +83,7 @@ public class MenuItemService : IMenuItemService
         catch (Exception ex)
         {
             return ResultDto<MenuItemReadDto>
-                   .Failure($"An error occurred: {ex.Message}", HttpStatusCode.InternalServerError);
+                   .Failure($"An error occurred while fetching the menu item: {ex.Message}", HttpStatusCode.InternalServerError);
         }
     }
 
@@ -128,7 +128,6 @@ public class MenuItemService : IMenuItemService
             menuItemToDelete.IsDeleted = true;
             menuItemToDelete.IsUsed = false;
 
-            _orderingContext.MenuItems.Update(menuItemToDelete);
             await _orderingContext.SaveChangesAsync();
 
             return ResultDto<bool>

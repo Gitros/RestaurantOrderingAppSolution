@@ -69,6 +69,10 @@ public class MenuTypeService : IMenuTypeService
                 .Include(o => o.MenuItems)
                 .FirstOrDefaultAsync(x => x.Id == id);
 
+            if (menuType == null)
+                return ResultDto<MenuTypeReadDto>
+                    .Failure("MenuType not found.", HttpStatusCode.NotFound);
+
             var menuTypeDto = _mapper.Map<MenuTypeReadDto>(menuType);
 
             return ResultDto<MenuTypeReadDto>
@@ -86,6 +90,10 @@ public class MenuTypeService : IMenuTypeService
         try
         {
             var menuTypeToUpdate = await _orderingContext.MenuTypes.FindAsync(id);
+
+            if (menuTypeToUpdate == null)
+                return ResultDto<MenuTypeReadDto>
+                    .Failure("MenuType not found or has been deleted.", HttpStatusCode.NotFound);
 
             _mapper.Map(menuTypeUpdateDto, menuTypeToUpdate);
 
@@ -115,7 +123,6 @@ public class MenuTypeService : IMenuTypeService
             menuType.IsDeleted = true;
             menuType.IsUsed = false;
 
-            _orderingContext.MenuTypes.Update(menuType);
             await _orderingContext.SaveChangesAsync();
 
             return ResultDto<bool>

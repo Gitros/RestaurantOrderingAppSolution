@@ -11,12 +11,6 @@
     <ProjectReference Include="..\Infrastructure.Database\Infrastructure.Database.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Validators\MenuTypes\" />
-    <Folder Include="Validators\MenuItems\" />
-    <Folder Include="Validators\Tables\" />
-  </ItemGroup>
-
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>

@@ -32,12 +32,6 @@ public class OrderItemService : IOrderItemService
                 return ResultDto<OrderItemReadDto>
                     .Failure("Order not found.", HttpStatusCode.NotFound);
 
-            var menuItem = await _orderingContext.MenuItems.FindAsync(orderItemCreateDto.MenuItemId);
-
-            if (menuItem == null)
-                return ResultDto<OrderItemReadDto>
-                    .Failure("Menu item not found.", HttpStatusCode.NotFound);
-
             var orderItem = _mapper.Map<OrderItem>(orderItemCreateDto);
             orderItem.OrderId = orderId;
 
