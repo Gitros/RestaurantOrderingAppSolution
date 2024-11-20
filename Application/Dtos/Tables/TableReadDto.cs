@@ -8,5 +8,8 @@ public class TableReadDto
     public string Name { get; set; }
     public int NumberOfPeople { get; set; }
     public bool IsOccupied { get; set; }
+    public bool IsUsed { get; set; }
+    public bool IsDeleted { get; set; }
+
     public List<OrderReadDto> Orders { get; set; } = new List<OrderReadDto>();
 }

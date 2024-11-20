@@ -20,8 +20,7 @@ public class OrderItemCreateDtoValidator : AbstractValidator<OrderItemCreateDto>
 
         RuleFor(x => x.MenuItemId)
             .NotEmpty().WithMessage("MenuItemId is required.")
-            .MustAsync(async (menuItemId, cancellation) =>
-                await _orderingContext.MenuItems.AnyAsync(m => m.Id == menuItemId))
+            .Must(menuItemId => _orderingContext.MenuItems.Any(m => m.Id == menuItemId))
             .WithMessage("The specified MenuItemId does not exist.");
 
         RuleFor(x => x.SpecialInstructions)
