@@ -1,9 +1,10 @@
-﻿import { useTableQuery } from "../../helpers/queries/table/useTableQuery";
+﻿import { useTableQuery } from "../../../helpers/queries/table/useTableQuery";
 
 export default function WaitressPage() {
     const { data: tables, isLoading, isError, error } = useTableQuery();
 
     if (isLoading) return <p>Loading tables...</p>;
+
     if (isError) return <p>Error: {error.message}</p>;
 
     return (
