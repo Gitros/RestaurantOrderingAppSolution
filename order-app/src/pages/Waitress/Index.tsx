@@ -1,21 +1,16 @@
-﻿import axios from "axios";
-import { useEffect, useState } from "react";
+﻿import { useTableQuery } from "../../helpers/queries/table/useTableQuery";
 
 export default function WaitressPage() {
-    const [tables, setTables] = useState([]);
+    const { data: tables, isLoading, isError, error } = useTableQuery();
 
-    useEffect(() => {
-        axios.get('http://localhost:5000/api/table')
-            .then(response => {
-                setTables(response.data)
-            })
-    }, [])
+    if (isLoading) return <p>Loading tables...</p>;
+    if (isError) return <p>Error: {error.message}</p>;
 
     return (
         <div>
             <h1>Tables</h1>
             <ul>
-                {tables.map((table: any) => (
+                {tables?.map((table) => (
                     <li key={table.id}>
                         {table.name}
                     </li>
