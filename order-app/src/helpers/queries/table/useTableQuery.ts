@@ -1,15 +1,12 @@
 ﻿import { useQuery } from "@tanstack/react-query";
-import { Table } from "../../../models/table";
-import apiClient from "../../../utils/apiClient";
 
-const fetchTables = async (): Promise<Table[]> => {
-    const { data } = await apiClient.get("/table");
-    return data;
-}
+import apiClient, { API } from "../../../utils/apiClient";
+import { QueryKeys } from "../../../utils/queryKeys";
 
-export const useTableQuery = () => {
-    return useQuery({
-        queryKey: ['getAllTables'],
-        queryFn: fetchTables
-    });
-};
+import type { Table } from "../../../types/table";
+
+
+export const useTableQuery = () => useQuery({
+    queryKey: [QueryKeys.Tables],
+    queryFn: () => apiClient <Table[]>(API.Tables)
+});
