@@ -4,7 +4,7 @@ import OrderSummary from "@/components/OrderSummary/Index";
 import Sidebar from "@/components/Sidebar/Index";
 
 const MainPage = () => (
-        <div className="w-4/5 h-[80vh] bg-white shadow-lg rounded-lg flex">
+        <div className="w-5/6 h-[80vh] bg-black shadow-lg rounded-xl flex">
             <Sidebar/>
             <div className="flex flex-1">
                 <OrderSummary/>
