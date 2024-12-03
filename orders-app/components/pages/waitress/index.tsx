@@ -1,4 +1,6 @@
-﻿import { useTableQuery } from "../../../helpers/queries/table/useTableQuery";
+﻿"use client";
+
+import { useTableQuery } from "../../../helpers/queries/table/useTableQuery";
 
 export default function WaitressPage() {
     const { data: tables, isLoading, isError, error } = useTableQuery();
