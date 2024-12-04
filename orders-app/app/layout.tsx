@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 import QueryProvider from "@/providers/queryProvider";
+import Sidebar from "@/components/Sidebar/Index";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -30,7 +31,12 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <QueryProvider>
-          {children}
+          <main className="min-h-screen bg-gradient-to-b from-[#1E2A40] to-[#2B4B7C] flex items-center justify-center">
+            <div className="w-5/6 min-h-[80vh] bg-black shadow-lg rounded-xl flex">
+              <Sidebar />
+              {children}
+            </div>
+          </main>
         </QueryProvider>
       </body>
     </html>

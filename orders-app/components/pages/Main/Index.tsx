@@ -1,17 +1,13 @@
 import Categories from "@/components/Categories/Index";
 import MenuGrid from "@/components/MenuGrid/Index";
 import OrderSummary from "@/components/OrderSummary/Index";
-import Sidebar from "@/components/Sidebar/Index";
 
 const MainPage = () => (
-        <div className="w-5/6 h-[80vh] bg-black shadow-lg rounded-xl flex">
-            <Sidebar/>
-            <div className="flex flex-1">
-                <OrderSummary/>
-                <MenuGrid/>
-                <Categories/>
-            </div>
-        </div>
+    <div className="flex flex-1">
+        <OrderSummary/>
+        <MenuGrid/>
+        <Categories/>
+    </div>
 );
 
 export default MainPage;
