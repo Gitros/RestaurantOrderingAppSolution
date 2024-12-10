@@ -17,6 +17,9 @@ public class TableMappingProfile : Profile
         CreateMap<Table, TableReadDto>()
             .ForMember(dest => dest.Orders, opt => opt.MapFrom(src => src.Orders));
 
+        CreateMap<Table, TableSummaryDto>()
+            .ForMember(dest => dest.Orders, opt => opt.MapFrom(src => src.Orders));
+
         CreateMap<TableUpdateDto, Table>();
 
         CreateMap<TableOccupancyDto, Table>()

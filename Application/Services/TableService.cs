@@ -48,7 +48,7 @@ public class TableService : ITableService
             var table = await _orderingContext.Tables
                 .Include(t => t.Orders)
                 .ThenInclude(o => o.OrderItems)
-                .FirstOrDefaultAsync(t => t.Id == id);
+                .FirstOrDefaultAsync(t => t.Id == id && t.IsUsed && !t.IsDeleted);
 
             if (table == null)
                 return ResultDto<TableReadDto>
@@ -66,22 +66,23 @@ public class TableService : ITableService
         }
     }
 
-    public async Task<ResultDto<List<TableReadDto>>> GetAllTables()
+    public async Task<ResultDto<List<TableSummaryDto>>> GetAllTables()
     {
         try
         {
             var tables = await _orderingContext.Tables
             .Include(t => t.Orders)
+            .Where(t => t.IsUsed && !t.IsDeleted)
             .ToListAsync();
 
-            var tablesDto = _mapper.Map<List<TableReadDto>>(tables);
+            var tablesDto = _mapper.Map<List<TableSummaryDto>>(tables);
 
-            return ResultDto<List<TableReadDto>>
+            return ResultDto<List<TableSummaryDto>>
                 .Success(tablesDto, HttpStatusCode.OK);
         }
         catch (Exception ex)
         {
-            return ResultDto<List<TableReadDto>>
+            return ResultDto<List<TableSummaryDto>>
                 .Failure($"An error occurred: {ex.Message}", HttpStatusCode.InternalServerError);
         }
     }

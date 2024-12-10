@@ -1,15 +1,10 @@
-﻿using Application.Dtos.OrderItems;
+﻿namespace Application.Dtos.Orders;
 
-namespace Application.Dtos.Orders;
-
-public class OrderReadDto
+public class OrderSummaryDto
 {
     public Guid Id { get; set; }
     public DateTime OrderDateTime { get; set; }
     public decimal TotalAmount { get; set; }
     public string OrderStatus { get; set; }
-
-    public List<OrderItemReadDto> OrderItems { get; set; } 
-
     public Guid TableId { get; set; }
 }
