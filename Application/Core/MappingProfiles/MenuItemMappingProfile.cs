@@ -8,7 +8,9 @@ public class MenuItemMappingProfile : Profile
 {
     public MenuItemMappingProfile()
     {
-        CreateMap<MenuItem, MenuItemReadDto>()
+        CreateMap<MenuItem, MenuItemReadDto>();
+
+        CreateMap<MenuItem, MenuItemDetailedDto>()
             .ForMember(dest => dest.MenuTypeName, opt => opt.MapFrom(src => src.MenuType.Name));
 
         CreateMap<MenuItemCreateDto, MenuItem>()
