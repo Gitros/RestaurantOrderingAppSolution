@@ -14,8 +14,7 @@ public class TableMappingProfile : Profile
             .ForMember(dest => dest.IsUsed, opt => opt.MapFrom(_ => true))
             .ForMember(dest => dest.IsDeleted, opt => opt.MapFrom(_ => false));
 
-        CreateMap<Table, TableReadDto>()
-            .ForMember(dest => dest.Orders, opt => opt.MapFrom(src => src.Orders));
+        CreateMap<Table, TableReadDto>();
 
         CreateMap<Table, TableSummaryDto>()
             .ForMember(dest => dest.Orders, opt => opt.MapFrom(src => src.Orders));

@@ -41,7 +41,7 @@ public class TableService : ITableService
         }
     }
 
-    public async Task<ResultDto<TableReadDto>> GetTable(Guid id)
+    public async Task<ResultDto<TableSummaryDto>> GetTable(Guid id)
     {
         try
         {
@@ -51,22 +51,22 @@ public class TableService : ITableService
                 .FirstOrDefaultAsync(t => t.Id == id && t.IsUsed && !t.IsDeleted);
 
             if (table == null)
-                return ResultDto<TableReadDto>
+                return ResultDto<TableSummaryDto>
                     .Failure("Table not found or deleted.", HttpStatusCode.NotFound);
 
-            var tableDto = _mapper.Map<TableReadDto>(table);
+            var tableDto = _mapper.Map<TableSummaryDto>(table);
 
-            return ResultDto<TableReadDto>
+            return ResultDto<TableSummaryDto>
                 .Success(tableDto, HttpStatusCode.OK);
         }
         catch (Exception ex)
         {
-            return ResultDto<TableReadDto>
+            return ResultDto<TableSummaryDto>
                 .Failure($"An error occurred: {ex.Message}", HttpStatusCode.InternalServerError);
         }
     }
 
-    public async Task<ResultDto<List<TableSummaryDto>>> GetAllTables()
+    public async Task<ResultDto<List<TableReadDto>>> GetAllTables()
     {
         try
         {
@@ -75,14 +75,14 @@ public class TableService : ITableService
             .Where(t => t.IsUsed && !t.IsDeleted)
             .ToListAsync();
 
-            var tablesDto = _mapper.Map<List<TableSummaryDto>>(tables);
+            var tablesDto = _mapper.Map<List<TableReadDto>>(tables);
 
-            return ResultDto<List<TableSummaryDto>>
+            return ResultDto<List<TableReadDto>>
                 .Success(tablesDto, HttpStatusCode.OK);
         }
         catch (Exception ex)
         {
-            return ResultDto<List<TableSummaryDto>>
+            return ResultDto<List<TableReadDto>>
                 .Failure($"An error occurred: {ex.Message}", HttpStatusCode.InternalServerError);
         }
     }

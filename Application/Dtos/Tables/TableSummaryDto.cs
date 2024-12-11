@@ -9,7 +9,6 @@ public class TableSummaryDto
     public int NumberOfPeople { get; set; }
     public bool IsOccupied { get; set; }
     public bool IsUsed { get; set; }
-    public bool IsDeleted { get; set; }
 
     public List<OrderSummaryDto> Orders { get; set; } = new List<OrderSummaryDto>();
 }

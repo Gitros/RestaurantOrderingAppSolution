@@ -1,6 +1,4 @@
-﻿using Application.Dtos.Orders;
-
-namespace Application.Dtos.Tables;
+﻿namespace Application.Dtos.Tables;
 
 public class TableReadDto
 {
@@ -9,7 +7,4 @@ public class TableReadDto
     public int NumberOfPeople { get; set; }
     public bool IsOccupied { get; set; }
     public bool IsUsed { get; set; }
-    public bool IsDeleted { get; set; }
-
-    public List<OrderReadDto> Orders { get; set; } = new List<OrderReadDto>();
 }

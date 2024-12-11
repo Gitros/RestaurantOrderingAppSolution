@@ -9,7 +9,7 @@ public class OrderReadDto
     public decimal TotalAmount { get; set; }
     public string OrderStatus { get; set; }
 
-    public List<OrderItemReadDto> OrderItems { get; set; } 
+    public List<OrderItemSummaryDto> OrderItems { get; set; } 
 
     public Guid TableId { get; set; }
 }
