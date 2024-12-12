@@ -26,6 +26,22 @@ public class MenuItemService : IMenuItemService
         {
             var menuItem = _mapper.Map<MenuItem>(menuItemCreateDto);
 
+            if (menuItemCreateDto.TagIds.Any())
+            {
+                var validTags = await _orderingContext.Tags
+                    .Where(t => menuItemCreateDto.TagIds.Contains(t.Id))
+                    .ToListAsync();
+
+                foreach (var tag in validTags)
+                {
+                    menuItem.MenuItemTags.Add(new MenuItemTag
+                    {
+                        MenuItemId = menuItem.Id,
+                        TagId = tag.Id
+                    });
+                }
+            }
+
             await _orderingContext.MenuItems.AddAsync(menuItem);
             await _orderingContext.SaveChangesAsync();
 
@@ -46,7 +62,8 @@ public class MenuItemService : IMenuItemService
         try
         {
             var menuItems = await _orderingContext.MenuItems
-                .Include(mi => mi.MenuCategory)
+                .Include(mi => mi.MenuItemTags)
+                .ThenInclude(mt => mt.Tag)
                 .ToListAsync();
 
             var menuItemDtos = _mapper.Map<List<MenuItemReadDto>>(menuItems);
@@ -89,22 +106,40 @@ public class MenuItemService : IMenuItemService
     {
         try
         {
-            var menuItemToUpdate = await _orderingContext.MenuItems
-                .Include(mi => mi.MenuCategory)
+            var menuItem = await _orderingContext.MenuItems
+                .Include(mi => mi.MenuItemTags)
                 .FirstOrDefaultAsync(mi => mi.Id == id);
 
-            if (menuItemToUpdate == null)
+            if (menuItem == null)
                 return ResultDto<MenuItemReadDto>
                     .Failure("Menu item not found.", HttpStatusCode.NotFound);
 
-            _mapper.Map(menuItemUpdateDto, menuItemToUpdate);
+            _mapper.Map(menuItemUpdateDto, menuItem);
+
+            menuItem.MenuItemTags.Clear(); 
+
+            if (menuItemUpdateDto.TagIds.Any())
+            {
+                var validTags = await _orderingContext.Tags
+                    .Where(t => menuItemUpdateDto.TagIds.Contains(t.Id))
+                    .ToListAsync();
+
+                foreach (var tag in validTags)
+                {
+                    menuItem.MenuItemTags.Add(new MenuItemTag
+                    {
+                        MenuItemId = menuItem.Id,
+                        TagId = tag.Id
+                    });
+                }
+            }
 
             await _orderingContext.SaveChangesAsync();
 
-            var updatedMenuItemDto = _mapper.Map<MenuItemReadDto>(menuItemToUpdate);
+            var updatedMenuItem = _mapper.Map<MenuItemReadDto>(menuItem);
 
             return ResultDto<MenuItemReadDto>
-                .Success(updatedMenuItemDto, HttpStatusCode.OK);
+                .Success(updatedMenuItem, HttpStatusCode.OK);
         }
         catch (Exception ex)
         {
@@ -112,6 +147,7 @@ public class MenuItemService : IMenuItemService
                 .Failure($"An error occurred: {ex.Message}", HttpStatusCode.InternalServerError);
         }
     }
+
 
     public async Task<ResultDto<bool>> DeleteMenuItem(Guid id)
     {

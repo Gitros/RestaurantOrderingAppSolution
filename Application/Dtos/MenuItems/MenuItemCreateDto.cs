@@ -7,5 +7,6 @@ public class MenuItemCreateDto
     public decimal Price { get; set; }
     public bool IsUsed { get; set; }
 
-    public Guid MenuTypeId { get; set; }
+    public Guid MenuCategoryId { get; set; }
+    public List<Guid> TagIds { get; set; } = new List<Guid>();
 }

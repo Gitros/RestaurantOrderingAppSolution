@@ -1,4 +1,6 @@
-﻿namespace Application.Dtos.MenuItems;
+﻿using Application.Dtos.MenuItemTags;
+
+namespace Application.Dtos.MenuItems;
 
 public class MenuItemReadDto
 {
@@ -7,4 +9,5 @@ public class MenuItemReadDto
     public string Description { get; set; }
     public decimal Price { get; set; }
     public bool IsUsed { get; set; }
+    public List<MenuItemTagReadDto> Tags { get; set; } = new List<MenuItemTagReadDto>();
 }
