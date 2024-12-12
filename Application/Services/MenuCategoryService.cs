@@ -96,7 +96,6 @@ public class MenuCategoryService : IMenuCategoryService
                     .Failure("MenuCategory not found or has been deleted.", HttpStatusCode.NotFound);
 
             _mapper.Map(menuCategoryUpdateDto, menuCategoryToUpdate);
-
             await _orderingContext.SaveChangesAsync();
 
             var updatedMenuCategory = _mapper.Map<MenuCategoryReadDto>(menuCategoryToUpdate);

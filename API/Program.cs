@@ -16,6 +16,8 @@ builder.Services.AddScoped<IMenuCategoryService, MenuCategoryService>();
 builder.Services.AddScoped<IMenuItemService, MenuItemService>();
 builder.Services.AddScoped<IOrderItemService, OrderItemService>();
 builder.Services.AddScoped<ITableService, TableService>();
+builder.Services.AddScoped<IIngredientService, IngredientService>();
+
 
 // Register Fluent Validation
 builder.Services.AddFluentValidationAutoValidation();
