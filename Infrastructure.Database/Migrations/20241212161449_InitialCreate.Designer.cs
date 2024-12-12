@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Database.Migrations
 {
     [DbContext(typeof(RestaurantOrderingContext))]
-    [Migration("20241107170406_InitialCreate")]
+    [Migration("20241212161449_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -19,6 +19,52 @@ namespace Infrastructure.Database.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.10");
+
+            modelBuilder.Entity("Domain.Ingredient", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("IngredientType")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("IsUsed")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("TEXT");
+
+                    b.Property<decimal>("Price")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Ingredients");
+                });
+
+            modelBuilder.Entity("Domain.MenuCategory", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("IsUsed")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("MenuCategories");
+                });
 
             modelBuilder.Entity("Domain.MenuItem", b =>
                 {
@@ -35,7 +81,7 @@ namespace Infrastructure.Database.Migrations
                     b.Property<bool>("IsUsed")
                         .HasColumnType("INTEGER");
 
-                    b.Property<Guid>("MenuTypeId")
+                    b.Property<Guid>("MenuCategoryId")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Name")
@@ -46,29 +92,24 @@ namespace Infrastructure.Database.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("MenuTypeId");
+                    b.HasIndex("MenuCategoryId");
 
                     b.ToTable("MenuItems");
                 });
 
-            modelBuilder.Entity("Domain.MenuType", b =>
+            modelBuilder.Entity("Domain.MenuItemTag", b =>
                 {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
+                    b.Property<Guid>("MenuItemId")
                         .HasColumnType("TEXT");
 
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<bool>("IsUsed")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("Name")
+                    b.Property<Guid>("TagId")
                         .HasColumnType("TEXT");
 
-                    b.HasKey("Id");
+                    b.HasKey("MenuItemId", "TagId");
 
-                    b.ToTable("MenuTypes");
+                    b.HasIndex("TagId");
+
+                    b.ToTable("MenuItemTags");
                 });
 
             modelBuilder.Entity("Domain.Order", b =>
@@ -129,6 +170,24 @@ namespace Infrastructure.Database.Migrations
                     b.ToTable("OrderItems");
                 });
 
+            modelBuilder.Entity("Domain.OrderItemIngredient", b =>
+                {
+                    b.Property<Guid>("OrderItemId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("IngredientId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("OrderItemId", "IngredientId");
+
+                    b.HasIndex("IngredientId");
+
+                    b.ToTable("OrderItemIngredients");
+                });
+
             modelBuilder.Entity("Domain.Table", b =>
                 {
                     b.Property<Guid>("Id")
@@ -155,15 +214,54 @@ namespace Infrastructure.Database.Migrations
                     b.ToTable("Tables");
                 });
 
+            modelBuilder.Entity("Domain.Tag", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("IsUsed")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Tags");
+                });
+
             modelBuilder.Entity("Domain.MenuItem", b =>
                 {
-                    b.HasOne("Domain.MenuType", "MenuType")
+                    b.HasOne("Domain.MenuCategory", "MenuCategory")
                         .WithMany("MenuItems")
-                        .HasForeignKey("MenuTypeId")
+                        .HasForeignKey("MenuCategoryId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.Navigation("MenuType");
+                    b.Navigation("MenuCategory");
+                });
+
+            modelBuilder.Entity("Domain.MenuItemTag", b =>
+                {
+                    b.HasOne("Domain.MenuItem", "MenuItem")
+                        .WithMany("MenuItemTags")
+                        .HasForeignKey("MenuItemId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Domain.Tag", "Tag")
+                        .WithMany("MenuItemTags")
+                        .HasForeignKey("TagId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("MenuItem");
+
+                    b.Navigation("Tag");
                 });
 
             modelBuilder.Entity("Domain.Order", b =>
@@ -196,9 +294,38 @@ namespace Infrastructure.Database.Migrations
                     b.Navigation("Order");
                 });
 
-            modelBuilder.Entity("Domain.MenuType", b =>
+            modelBuilder.Entity("Domain.OrderItemIngredient", b =>
+                {
+                    b.HasOne("Domain.Ingredient", "Ingredient")
+                        .WithMany("OrderItemIngredients")
+                        .HasForeignKey("IngredientId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Domain.OrderItem", "OrderItem")
+                        .WithMany("OrderItemIngredients")
+                        .HasForeignKey("OrderItemId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Ingredient");
+
+                    b.Navigation("OrderItem");
+                });
+
+            modelBuilder.Entity("Domain.Ingredient", b =>
+                {
+                    b.Navigation("OrderItemIngredients");
+                });
+
+            modelBuilder.Entity("Domain.MenuCategory", b =>
                 {
                     b.Navigation("MenuItems");
+                });
+
+            modelBuilder.Entity("Domain.MenuItem", b =>
+                {
+                    b.Navigation("MenuItemTags");
                 });
 
             modelBuilder.Entity("Domain.Order", b =>
@@ -206,9 +333,19 @@ namespace Infrastructure.Database.Migrations
                     b.Navigation("OrderItems");
                 });
 
+            modelBuilder.Entity("Domain.OrderItem", b =>
+                {
+                    b.Navigation("OrderItemIngredients");
+                });
+
             modelBuilder.Entity("Domain.Table", b =>
                 {
                     b.Navigation("Orders");
+                });
+
+            modelBuilder.Entity("Domain.Tag", b =>
+                {
+                    b.Navigation("MenuItemTags");
                 });
 #pragma warning restore 612, 618
         }

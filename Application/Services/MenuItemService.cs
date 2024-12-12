@@ -33,12 +33,11 @@ public class MenuItemService : IMenuItemService
 
             return ResultDto<MenuItemReadDto>
                 .Success(createdMenuItem, HttpStatusCode.Created);
-
         }
         catch (Exception ex)
         {
             return ResultDto<MenuItemReadDto>
-                   .Failure($"An error occurred: {ex.Message}", HttpStatusCode.InternalServerError);
+                .Failure($"An error occurred: {ex.Message}", HttpStatusCode.InternalServerError);
         }
     }
 
@@ -47,7 +46,7 @@ public class MenuItemService : IMenuItemService
         try
         {
             var menuItems = await _orderingContext.MenuItems
-                .Include(mi => mi.MenuType)
+                .Include(mi => mi.MenuCategory)
                 .ToListAsync();
 
             var menuItemDtos = _mapper.Map<List<MenuItemReadDto>>(menuItems);
@@ -58,7 +57,7 @@ public class MenuItemService : IMenuItemService
         catch (Exception ex)
         {
             return ResultDto<List<MenuItemReadDto>>
-                   .Failure($"An error occurred: {ex.Message}", HttpStatusCode.InternalServerError);
+                .Failure($"An error occurred: {ex.Message}", HttpStatusCode.InternalServerError);
         }
     }
 
@@ -67,10 +66,10 @@ public class MenuItemService : IMenuItemService
         try
         {
             var menuItem = await _orderingContext.MenuItems
-                .Include(mi => mi.MenuType)
+                .Include(mi => mi.MenuCategory)
                 .FirstOrDefaultAsync(mi => mi.Id == id);
 
-            if(menuItem == null) 
+            if (menuItem == null)
                 return ResultDto<MenuItemReadDto>
                     .Failure("Menu item not found.", HttpStatusCode.NotFound);
 
@@ -78,12 +77,11 @@ public class MenuItemService : IMenuItemService
 
             return ResultDto<MenuItemReadDto>
                 .Success(menuItemDto, HttpStatusCode.OK);
-
         }
         catch (Exception ex)
         {
             return ResultDto<MenuItemReadDto>
-                   .Failure($"An error occurred while fetching the menu item: {ex.Message}", HttpStatusCode.InternalServerError);
+                .Failure($"An error occurred while fetching the menu item: {ex.Message}", HttpStatusCode.InternalServerError);
         }
     }
 
@@ -92,7 +90,7 @@ public class MenuItemService : IMenuItemService
         try
         {
             var menuItemToUpdate = await _orderingContext.MenuItems
-                .Include(mi => mi.MenuType) 
+                .Include(mi => mi.MenuCategory)
                 .FirstOrDefaultAsync(mi => mi.Id == id);
 
             if (menuItemToUpdate == null)
@@ -111,7 +109,7 @@ public class MenuItemService : IMenuItemService
         catch (Exception ex)
         {
             return ResultDto<MenuItemReadDto>
-                   .Failure($"An error occurred: {ex.Message}", HttpStatusCode.InternalServerError);
+                .Failure($"An error occurred: {ex.Message}", HttpStatusCode.InternalServerError);
         }
     }
 
@@ -136,7 +134,7 @@ public class MenuItemService : IMenuItemService
         catch (Exception ex)
         {
             return ResultDto<bool>
-                   .Failure($"An error occurred: {ex.Message}", HttpStatusCode.InternalServerError);
+                .Failure($"An error occurred: {ex.Message}", HttpStatusCode.InternalServerError);
         }
     }
 }

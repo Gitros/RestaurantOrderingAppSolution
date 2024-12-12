@@ -1,7 +1,6 @@
 ﻿namespace Domain;
 
-// MenuCategory??
-public class MenuType
+public class MenuCategory
 {
     public Guid Id { get; set; }
     public string Name { get; set; }

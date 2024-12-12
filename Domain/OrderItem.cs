@@ -7,6 +7,8 @@ public class OrderItem
     public int Quantity { get; set; }
     public string SpecialInstructions { get; set; }
 
+    public List<OrderItemIngredient> OrderItemIngredients { get; set; } = new List<OrderItemIngredient>();
+
     public OrderItemStatus OrderItemStatus { get; set; }
 
     public Guid OrderId { get; set; }

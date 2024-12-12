@@ -1,11 +1,11 @@
-﻿using Application.Dtos.MenuTypes;
+﻿using Application.Dtos.MenuCategories;
 using FluentValidation;
 
-namespace Application.Validators.MenuTypes;
+namespace Application.Validators.MenuCategories;
 
-public class MenuTypeCreateDtoValidator : AbstractValidator<MenuTypeCreateDto>
+public class MenuCategoryCreateDtoValidator : AbstractValidator<MenuCategoryCreateDto>
 {
-    public MenuTypeCreateDtoValidator()
+    public MenuCategoryCreateDtoValidator()
     {
         RuleFor(x => x.Name)
             .NotEmpty().WithMessage("Name is required.")

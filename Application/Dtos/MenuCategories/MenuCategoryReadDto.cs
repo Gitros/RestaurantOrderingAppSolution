@@ -1,8 +1,8 @@
 ﻿using Application.Dtos.MenuItems;
 
-namespace Application.Dtos.MenuTypes;
+namespace Application.Dtos.MenuCategories;
 
-public class MenuTypeReadDto
+public class MenuCategoryReadDto
 {
     public Guid Id { get; set; }
     public string Name { get; set; }

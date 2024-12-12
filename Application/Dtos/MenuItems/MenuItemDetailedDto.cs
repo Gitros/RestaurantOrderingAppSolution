@@ -9,6 +9,6 @@ public class MenuItemDetailedDto
     public bool IsUsed { get; set; }
     public bool IsDeleted { get; set; }
 
-    public Guid MenuTypeId { get; set; }
-    public string MenuTypeName { get; set; }
+    public Guid MenuCategoryId { get; set; }
+    public string MenuCategoryName { get; set; }
 }

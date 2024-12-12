@@ -1,35 +1,35 @@
 ﻿using Application.Contracts;
-using Application.Dtos.MenuTypes;
+using Application.Dtos.MenuCategories;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers;
 
-public class MenuTypeController : BaseApiController
+public class MenuCategoryController : BaseApiController
 {
-    private readonly IMenuTypeService _menuTypeService;
+    private readonly IMenuCategoryService _menuCategoryService;
 
-    public MenuTypeController(IMenuTypeService menuTypeService)
+    public MenuCategoryController(IMenuCategoryService menuCategoryService)
     {
-        _menuTypeService = menuTypeService;
+        _menuCategoryService = menuCategoryService;
     }
 
     [HttpPost]
-    public async Task<IActionResult> CreateMenuType([FromBody] MenuTypeCreateDto menuTypeCreateDto) =>
-        HandleResult(await _menuTypeService.CreateMenuType(menuTypeCreateDto));
+    public async Task<IActionResult> CreateMenuCategory([FromBody] MenuCategoryCreateDto menuCategoryCreateDto) =>
+        HandleResult(await _menuCategoryService.CreateMenuCategory(menuCategoryCreateDto));
 
     [HttpGet("{id}")]
-    public async Task<IActionResult> GetMenuType(Guid id) =>
-        HandleResult(await _menuTypeService.GetMenuType(id));
+    public async Task<IActionResult> GetMenuCategory(Guid id) =>
+        HandleResult(await _menuCategoryService.GetMenuCategory(id));
 
     [HttpGet]
-    public async Task<IActionResult> GetAllMenuTypes() =>
-        HandleResult(await _menuTypeService.GetAllMenuTypes());
+    public async Task<IActionResult> GetAllMenuCategories() =>
+        HandleResult(await _menuCategoryService.GetAllMenuCategories());
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> UpdateMenuType([FromBody] MenuTypeUpdateDto menuTypeUpdateDto, Guid id) =>
-        HandleResult(await _menuTypeService.UpdateMenuType(menuTypeUpdateDto, id));
+    public async Task<IActionResult> UpdateMenuCategory([FromBody] MenuCategoryUpdateDto menuCategoryUpdateDto, Guid id) =>
+        HandleResult(await _menuCategoryService.UpdateMenuCategory(menuCategoryUpdateDto, id));
 
     [HttpDelete("{id}")]
-    public async Task<IActionResult> DeleteMenuType(Guid id) =>
-        HandleResult(await _menuTypeService.DeleteMenuType(id));
+    public async Task<IActionResult> DeleteMenuCategory(Guid id) =>
+        HandleResult(await _menuCategoryService.DeleteMenuCategory(id));
 }

@@ -12,7 +12,23 @@ namespace Infrastructure.Database.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "MenuTypes",
+                name: "Ingredients",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
+                    Name = table.Column<string>(type: "TEXT", nullable: true),
+                    Price = table.Column<decimal>(type: "TEXT", nullable: false),
+                    IsUsed = table.Column<bool>(type: "INTEGER", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "INTEGER", nullable: false),
+                    IngredientType = table.Column<int>(type: "INTEGER", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Ingredients", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "MenuCategories",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "TEXT", nullable: false),
@@ -22,7 +38,7 @@ namespace Infrastructure.Database.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_MenuTypes", x => x.Id);
+                    table.PrimaryKey("PK_MenuCategories", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -42,6 +58,20 @@ namespace Infrastructure.Database.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Tags",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
+                    Name = table.Column<string>(type: "TEXT", nullable: true),
+                    IsUsed = table.Column<bool>(type: "INTEGER", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "INTEGER", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Tags", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "MenuItems",
                 columns: table => new
                 {
@@ -51,15 +81,15 @@ namespace Infrastructure.Database.Migrations
                     Price = table.Column<decimal>(type: "TEXT", nullable: false),
                     IsUsed = table.Column<bool>(type: "INTEGER", nullable: false),
                     IsDeleted = table.Column<bool>(type: "INTEGER", nullable: false),
-                    MenuTypeId = table.Column<Guid>(type: "TEXT", nullable: false)
+                    MenuCategoryId = table.Column<Guid>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_MenuItems", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_MenuItems_MenuTypes_MenuTypeId",
-                        column: x => x.MenuTypeId,
-                        principalTable: "MenuTypes",
+                        name: "FK_MenuItems_MenuCategories_MenuCategoryId",
+                        column: x => x.MenuCategoryId,
+                        principalTable: "MenuCategories",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -83,6 +113,30 @@ namespace Infrastructure.Database.Migrations
                         principalTable: "Tables",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "MenuItemTags",
+                columns: table => new
+                {
+                    MenuItemId = table.Column<Guid>(type: "TEXT", nullable: false),
+                    TagId = table.Column<Guid>(type: "TEXT", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_MenuItemTags", x => new { x.MenuItemId, x.TagId });
+                    table.ForeignKey(
+                        name: "FK_MenuItemTags_MenuItems_MenuItemId",
+                        column: x => x.MenuItemId,
+                        principalTable: "MenuItems",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_MenuItemTags_Tags_TagId",
+                        column: x => x.TagId,
+                        principalTable: "Tags",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -114,10 +168,45 @@ namespace Infrastructure.Database.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "OrderItemIngredients",
+                columns: table => new
+                {
+                    OrderItemId = table.Column<Guid>(type: "TEXT", nullable: false),
+                    IngredientId = table.Column<Guid>(type: "TEXT", nullable: false),
+                    Quantity = table.Column<int>(type: "INTEGER", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_OrderItemIngredients", x => new { x.OrderItemId, x.IngredientId });
+                    table.ForeignKey(
+                        name: "FK_OrderItemIngredients_Ingredients_IngredientId",
+                        column: x => x.IngredientId,
+                        principalTable: "Ingredients",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_OrderItemIngredients_OrderItems_OrderItemId",
+                        column: x => x.OrderItemId,
+                        principalTable: "OrderItems",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.CreateIndex(
-                name: "IX_MenuItems_MenuTypeId",
+                name: "IX_MenuItems_MenuCategoryId",
                 table: "MenuItems",
-                column: "MenuTypeId");
+                column: "MenuCategoryId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_MenuItemTags_TagId",
+                table: "MenuItemTags",
+                column: "TagId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_OrderItemIngredients_IngredientId",
+                table: "OrderItemIngredients",
+                column: "IngredientId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_OrderItems_MenuItemId",
@@ -139,6 +228,18 @@ namespace Infrastructure.Database.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
+                name: "MenuItemTags");
+
+            migrationBuilder.DropTable(
+                name: "OrderItemIngredients");
+
+            migrationBuilder.DropTable(
+                name: "Tags");
+
+            migrationBuilder.DropTable(
+                name: "Ingredients");
+
+            migrationBuilder.DropTable(
                 name: "OrderItems");
 
             migrationBuilder.DropTable(
@@ -148,7 +249,7 @@ namespace Infrastructure.Database.Migrations
                 name: "Orders");
 
             migrationBuilder.DropTable(
-                name: "MenuTypes");
+                name: "MenuCategories");
 
             migrationBuilder.DropTable(
                 name: "Tables");

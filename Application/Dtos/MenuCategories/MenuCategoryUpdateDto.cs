@@ -1,6 +1,6 @@
-﻿namespace Application.Dtos.MenuTypes;
+﻿namespace Application.Dtos.MenuCategories;
 
-public class MenuTypeUpdateDto
+public class MenuCategoryUpdateDto
 {
     public string Name { get; set; }
     public bool IsUsed { get; set; }

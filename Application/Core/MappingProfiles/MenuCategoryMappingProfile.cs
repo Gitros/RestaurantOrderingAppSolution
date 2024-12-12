@@ -1,20 +1,20 @@
-﻿using Application.Dtos.MenuTypes;
+﻿using Application.Dtos.MenuCategories;
 using AutoMapper;
 using Domain;
 
 namespace Application.Core.MappingProfiles;
 
-public class MenuTypeMappingProfile : Profile
+public class MenuCategoryMappingProfile : Profile
 {
-    public MenuTypeMappingProfile()
+    public MenuCategoryMappingProfile()
     {
-        CreateMap<MenuType, MenuTypeReadDto>()
+        CreateMap<MenuCategory, MenuCategoryReadDto>()
             .ForMember(dest => dest.MenuItems, opt => opt.MapFrom(src => src.MenuItems));
 
-        CreateMap<MenuTypeCreateDto, MenuType>()
+        CreateMap<MenuCategoryCreateDto, MenuCategory>()
             .ForMember(dest => dest.Id, opt => opt.MapFrom(_ => Guid.NewGuid()))
             .ForMember(dest => dest.IsDeleted, opt => opt.MapFrom(_ => false));
 
-        CreateMap<MenuTypeUpdateDto, MenuType>();
+        CreateMap<MenuCategoryUpdateDto, MenuCategory>();
     }
 }
