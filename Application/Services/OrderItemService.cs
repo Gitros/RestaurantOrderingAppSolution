@@ -35,6 +35,27 @@ public class OrderItemService : IOrderItemService
             var orderItem = _mapper.Map<OrderItem>(orderItemCreateDto);
             orderItem.OrderId = orderId;
 
+            if (orderItemCreateDto.Ingredients.Any())
+            {
+                var validIngredients = await _orderingContext.Ingredients
+                    .Where(i => orderItemCreateDto.Ingredients.Select(oi => oi.IngredientId).Contains(i.Id) && !i.IsDeleted)
+                    .ToListAsync();
+
+                foreach (var ingredientDto in orderItemCreateDto.Ingredients)
+                {
+                    var ingredient = validIngredients.FirstOrDefault(i => i.Id == ingredientDto.IngredientId);
+                    if (ingredient != null)
+                    {
+                        orderItem.OrderItemIngredients.Add(new OrderItemIngredient
+                        {
+                            IngredientId = ingredient.Id,
+                            Quantity = ingredientDto.Quantity,
+                            OrderItemId = orderItem.Id
+                        });
+                    }
+                }
+            }
+
             await _orderingContext.OrderItems.AddAsync(orderItem);
             await _orderingContext.SaveChangesAsync();
 
@@ -80,6 +101,8 @@ public class OrderItemService : IOrderItemService
         {
             var orderItems = await _orderingContext.OrderItems
                 .Include(oi => oi.MenuItem)
+                .Include(oi => oi.OrderItemIngredients)
+                    .ThenInclude(oii => oii.Ingredient)
                 .ToListAsync();
 
             var orderItemsDto = _mapper.Map<List<OrderItemReadDto>>(orderItems);
@@ -100,6 +123,7 @@ public class OrderItemService : IOrderItemService
         {
             var orderItemToUpdate = await _orderingContext.OrderItems
                 .Include(oi => oi.MenuItem)
+                .Include(oi => oi.OrderItemIngredients)
                 .FirstOrDefaultAsync(oi => oi.Id == id);
 
             if (orderItemToUpdate == null)
@@ -107,6 +131,29 @@ public class OrderItemService : IOrderItemService
                     .Failure("Order item not found.", HttpStatusCode.NotFound);
 
             _mapper.Map(orderItemUpdateDto, orderItemToUpdate);
+
+            orderItemToUpdate.OrderItemIngredients.Clear();
+
+            if (orderItemUpdateDto.Ingredients.Any())
+            {
+                var validIngredients = await _orderingContext.Ingredients
+                    .Where(i => orderItemUpdateDto.Ingredients.Select(oi => oi.IngredientId).Contains(i.Id) && !i.IsDeleted)
+                    .ToListAsync();
+
+                foreach (var ingredientDto in orderItemUpdateDto.Ingredients)
+                {
+                    var ingredient = validIngredients.FirstOrDefault(i => i.Id == ingredientDto.IngredientId);
+                    if (ingredient != null)
+                    {
+                        orderItemToUpdate.OrderItemIngredients.Add(new OrderItemIngredient
+                        {
+                            IngredientId = ingredient.Id,
+                            Quantity = ingredientDto.Quantity,
+                            OrderItemId = orderItemToUpdate.Id
+                        });
+                    }
+                }
+            }
 
             await _orderingContext.SaveChangesAsync();
 

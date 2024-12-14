@@ -1,4 +1,5 @@
-﻿using Application.Dtos.OrderItems;
+﻿using Application.Dtos.OrderItemIngredients;
+using Application.Dtos.OrderItems;
 using AutoMapper;
 using Domain;
 
@@ -10,6 +11,12 @@ public class OrderItemMappingProfile : Profile
     {
         CreateMap<OrderItem, OrderItemReadDto>()
             .ForMember(dest => dest.MenuItemName, opt => opt.MapFrom(src => src.MenuItem.Name))
+            .ForMember(dest => dest.Ingredients, opt => opt.MapFrom(src => src.OrderItemIngredients))
+            .ForMember(dest => dest.OrderItemStatus, opt => opt.MapFrom(src => MapOrderItemStatus(src.OrderItemStatus)));
+
+        CreateMap<OrderItem, OrderItemSummaryDto>()
+            .ForMember(dest => dest.MenuItemName, opt => opt.MapFrom(src => src.MenuItem.Name))
+            .ForMember(dest => dest.Ingredients, opt => opt.MapFrom(src => src.OrderItemIngredients))
             .ForMember(dest => dest.OrderItemStatus, opt => opt.MapFrom(src => MapOrderItemStatus(src.OrderItemStatus)));
 
         CreateMap<OrderItemCreateDto, OrderItem>()
@@ -18,6 +25,12 @@ public class OrderItemMappingProfile : Profile
             .ForMember(dest => dest.OrderId, opt => opt.Ignore());
 
         CreateMap<OrderItemUpdateDto, OrderItem>();
+
+        CreateMap<OrderItemIngredient, OrderItemIngredientReadDto>()
+            .ForMember(dest => dest.IngredientName, opt => opt.MapFrom(src => src.Ingredient.Name))
+            .ForMember(dest => dest.Price, opt => opt.MapFrom(src => src.Ingredient.Price));
+
+        CreateMap<OrderItemIngredientAddDto, OrderItemIngredient>();
     }
 
     private string MapOrderItemStatus(OrderItemStatus status)

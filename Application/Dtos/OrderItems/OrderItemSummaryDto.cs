@@ -1,4 +1,6 @@
-﻿namespace Application.Dtos.OrderItems;
+﻿using Application.Dtos.OrderItemIngredients;
+
+namespace Application.Dtos.OrderItems;
 
 public class OrderItemSummaryDto
 {
@@ -6,6 +8,8 @@ public class OrderItemSummaryDto
     public decimal Price { get; set; }
     public int Quantity { get; set; }
     public string SpecialInstructions { get; set; }
-
+    public string MenuItemName { get; set; }
     public string OrderItemStatus { get; set; }
+
+    public List<OrderItemIngredientReadDto> Ingredients { get; set; } = new List<OrderItemIngredientReadDto>();
 }

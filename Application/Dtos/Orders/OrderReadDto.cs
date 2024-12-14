@@ -10,6 +10,4 @@ public class OrderReadDto
     public string OrderStatus { get; set; }
 
     public List<OrderItemSummaryDto> OrderItems { get; set; } 
-
-    public Guid TableId { get; set; }
 }
