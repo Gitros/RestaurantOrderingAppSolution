@@ -55,6 +55,9 @@ public class OrderService : IOrderService
             var order = await _orderingContext.Orders
                 .Include(o => o.OrderItems)
                     .ThenInclude(oi => oi.MenuItem)
+                .Include(o => o.OrderItems)
+                    .ThenInclude(oi => oi.OrderItemIngredients)
+                    .ThenInclude(oii => oii.Ingredient)
                 .FirstOrDefaultAsync(o => o.Id == id);
 
             if (order == null)
