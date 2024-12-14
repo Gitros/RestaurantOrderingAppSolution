@@ -1,40 +1,10 @@
-using API.Middleware;
-using Application.Contracts;
-using Application.Core;
-using Application.Services;
-using Application.Validators.Orders;
-using FluentValidation;
-using FluentValidation.AspNetCore;
-using Infrastructure.Database;
-using Microsoft.EntityFrameworkCore;
+using API.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddScoped<IOrderService, OrderService>();
-builder.Services.AddScoped<IMenuCategoryService, MenuCategoryService>();
-builder.Services.AddScoped<IMenuItemService, MenuItemService>();
-builder.Services.AddScoped<IOrderItemService, OrderItemService>();
-builder.Services.AddScoped<ITableService, TableService>();
-builder.Services.AddScoped<IIngredientService, IngredientService>();
-builder.Services.AddScoped<ITagService, TagService>();
-
-// Register Fluent Validation
-builder.Services.AddFluentValidationAutoValidation();
-builder.Services.AddValidatorsFromAssemblyContaining<OrderCreateDtoValidator>();
-
-// Add Controllers
-builder.Services.AddControllers();
-
-// Swagger config
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
-
-// Database context
-builder.Services.AddDbContext<RestaurantOrderingContext>(opt =>
-{
-    opt.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection"));
-});
+builder.Services.AddApplicationServices();
+builder.Services.AddDatabaseServices(builder.Configuration);
 builder.Services.AddCors(opt =>
 {
     opt.AddPolicy("CorsPolicy", policy =>
@@ -43,13 +13,11 @@ builder.Services.AddCors(opt =>
     });
 });
 
-// Automapper config
-builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+builder.Services.AddControllers();
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
-
-// Exception Middleware
-app.UseMiddleware<ExceptionMiddleware>();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -59,25 +27,11 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseCors("CorsPolicy");
-
 app.UseAuthorization();
-
+app.UseCustomMiddlewares();
 app.MapControllers();
 
-// Migrate and seed db
-using var scope = app.Services.CreateScope();
-var services = scope.ServiceProvider;
-
-try
-{
-    var context = services.GetRequiredService<RestaurantOrderingContext>();
-    await context.Database.MigrateAsync();
-    await Seed.SeedData(context);
-}
-catch (Exception ex)
-{
-    var logger = services.GetRequiredService<ILogger<Program>>();
-    logger.LogError(ex, "An error occured during migration");
-}
+// Database Migration and Seeding
+await app.Services.UseDatabaseMigrationAndSeeding();
 
 app.Run();
