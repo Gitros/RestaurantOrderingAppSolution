@@ -5,11 +5,8 @@ namespace Application.Dtos.Orders;
 
 public class OrderCreateDto
 {
-    public DateTime OrderDateTime { get; set; }
-    public decimal TotalAmount { get; set; }
-    public OrderStatus OrderStatus { get; set; }
-
-    public List<OrderItemCreateDto> OrderItems { get; set; }
-
-    public Guid TableId { get; set; }
+    public DateTime OrderDateTime { get; set; } = DateTime.UtcNow;
+    public OrderType OrderType { get; set; }
+    public Guid? TableId { get; set; }
+    public string DeliveryAddress { get; set; }
 }

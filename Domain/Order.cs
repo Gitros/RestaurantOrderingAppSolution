@@ -12,8 +12,12 @@ public class Order
 
     public List<OrderItem> OrderItems { get; set; } = new List<OrderItem>();
 
-    public Guid TableId { get; set; }
+    public Guid? TableId { get; set; }
     public Table Table { get; set; }
+
+    public OrderType OrderType { get; set; }
+
+    public string DeliveryAddress { get; set; }
 }
 
 public enum OrderStatus
@@ -24,4 +28,11 @@ public enum OrderStatus
     Delivered = 3,
     Paid = 4,
     Cancelled = 5,
+}
+
+public enum OrderType
+{
+    DineIn = 0,
+    Takeaway = 1,
+    Delivery = 2
 }

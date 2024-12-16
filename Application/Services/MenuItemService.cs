@@ -107,7 +107,7 @@ public class MenuItemService : IMenuItemService
         try
         {
             var menuItems = await _orderingContext.MenuItems
-                .Where(mi => mi.MenuCategoryId == categoryId)
+                .Where(mi => mi.MenuCategoryId == categoryId && !mi.IsDeleted)
                 .Include(mi => mi.MenuItemTags)
                     .ThenInclude(mt => mt.Tag)
                 .ToListAsync();

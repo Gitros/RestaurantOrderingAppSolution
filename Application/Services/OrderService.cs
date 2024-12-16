@@ -28,9 +28,24 @@ public class OrderService : IOrderService
         {
             var order = _mapper.Map<Order>(orderCreateDto);
 
-            foreach (var item in order.OrderItems)
+            if(orderCreateDto.OrderType == OrderType.DineIn)
             {
-                item.OrderId = order.Id;
+                if(!orderCreateDto.TableId.HasValue)
+                {
+                    return ResultDto<OrderReadDto>
+                        .Failure("TableId is required for DineIn orders.", HttpStatusCode.BadRequest);
+                }
+                order.TableId = orderCreateDto.TableId.Value;
+            }
+
+            if (orderCreateDto.OrderType == OrderType.Delivery)
+            {
+                if (string.IsNullOrWhiteSpace(orderCreateDto.DeliveryAddress))
+                {
+                    return ResultDto<OrderReadDto>
+                        .Failure("Delivery address is required for Delivery orders.", HttpStatusCode.BadRequest);
+                }
+                order.DeliveryAddress = orderCreateDto.DeliveryAddress;
             }
 
             await _orderingContext.Orders.AddAsync(order);

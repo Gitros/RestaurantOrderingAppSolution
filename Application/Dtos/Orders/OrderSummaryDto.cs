@@ -6,4 +6,5 @@ public class OrderSummaryDto
     public DateTime OrderDateTime { get; set; }
     public decimal TotalAmount { get; set; }
     public string OrderStatus { get; set; }
+    public string OrderType { get; set; }
 }

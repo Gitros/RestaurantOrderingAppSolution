@@ -8,6 +8,10 @@ public class OrderReadDto
     public DateTime OrderDateTime { get; set; }
     public decimal TotalAmount { get; set; }
     public string OrderStatus { get; set; }
+    public string OrderType { get; set; }
 
-    public List<OrderItemSummaryDto> OrderItems { get; set; } 
+    public Guid? TableId { get; set; }
+    public string DeliveryAddress { get; set; }
+
+    public List<OrderItemSummaryDto> OrderItems { get; set; } = new List<OrderItemSummaryDto>();
 }
