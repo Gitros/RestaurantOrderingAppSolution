@@ -21,7 +21,7 @@ public class MenuCategoryController : BaseApiController
     public async Task<IActionResult> GetMenuCategory(Guid id) =>
         HandleResult(await _menuCategoryService.GetMenuCategory(id));
 
-    [HttpGet]
+    [HttpGet("menu-categories")]
     public async Task<IActionResult> GetAllMenuCategories() =>
         HandleResult(await _menuCategoryService.GetAllMenuCategories());
 

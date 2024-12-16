@@ -10,11 +10,8 @@ public class MenuItemMappingProfile : Profile
     public MenuItemMappingProfile()
     {
         CreateMap<MenuItem, MenuItemReadDto>()
-            .ForMember(dest => dest.Tags, opt => opt.MapFrom(src => src.MenuItemTags.Select(mt => new MenuItemTagReadDto
-            {
-                TagId = mt.TagId,
-                TagName = mt.Tag.Name
-            }).ToList()));
+            .ForMember(dest => dest.Tags, opt => opt.MapFrom(src => src.MenuItemTags.Select(mt => mt.Tag)
+            .ToList()));
 
         CreateMap<MenuItem, MenuItemDetailedDto>()
             .ForMember(dest => dest.MenuCategoryName, opt => opt.MapFrom(src => src.MenuCategory.Name));

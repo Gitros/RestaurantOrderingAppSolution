@@ -1,7 +1,6 @@
 ﻿using Application.Dtos.OrderItems;
 using FluentValidation;
 using Infrastructure.Database;
-using Microsoft.EntityFrameworkCore;
 
 public class OrderItemCreateDtoValidator : AbstractValidator<OrderItemCreateDto>
 {
