@@ -198,35 +198,33 @@ public class OrderItemService : IOrderItemService
                 .Where(i => ingredientDtos.Select(dto => dto.IngredientId).Contains(i.Id) && !i.IsDeleted)
                 .ToListAsync();
 
-            foreach (var ingredientDto in ingredientDtos)
-            {
-                var existingIngredient = orderItem.OrderItemIngredients
-                    .FirstOrDefault(oii => oii.IngredientId == ingredientDto.IngredientId);
+            var ingredientIdsToUpdate = new HashSet<Guid>(ingredientDtos.Select(dto => dto.IngredientId));
+            orderItem.OrderItemIngredients.RemoveAll(oii => !ingredientIdsToUpdate.Contains(oii.IngredientId));
 
-                if (existingIngredient != null)
+            foreach (var dto in ingredientDtos)
+            {
+                var ingredient = validIngredients
+                    .FirstOrDefault(i => i.Id == dto.IngredientId);
+
+                if (ingredient == null) continue;
+
+                var existing = orderItem.OrderItemIngredients
+                    .FirstOrDefault(oii => oii.IngredientId == ingredient.Id);
+
+                if (existing != null)
                 {
-                    // Update quantity for existing ingredient
-                    existingIngredient.Quantity = ingredientDto.Quantity;
+                    existing.Quantity = dto.Quantity;
                 }
                 else
                 {
-                    // Add new ingredient
-                    var ingredient = validIngredients.FirstOrDefault(i => i.Id == ingredientDto.IngredientId);
-                    if (ingredient != null)
+                    orderItem.OrderItemIngredients.Add(new OrderItemIngredient
                     {
-                        orderItem.OrderItemIngredients.Add(new OrderItemIngredient
-                        {
-                            IngredientId = ingredient.Id,
-                            Quantity = ingredientDto.Quantity,
-                            OrderItemId = orderItem.Id
-                        });
-                    }
+                        IngredientId = ingredient.Id,
+                        Quantity = dto.Quantity,
+                        OrderItemId = orderItemId
+                    });
                 }
             }
-
-            var ingredientIdsToKeep = ingredientDtos.Select(dto => dto.IngredientId).ToList();
-
-            orderItem.OrderItemIngredients.RemoveAll(oii => !ingredientIdsToKeep.Contains(oii.IngredientId));
 
             await _orderingContext.SaveChangesAsync();
             var updatedOrderItemDto = _mapper.Map<OrderItemReadDto>(orderItem);
@@ -240,6 +238,7 @@ public class OrderItemService : IOrderItemService
                 .Failure($"An error occurred: {ex.Message}", HttpStatusCode.InternalServerError);
         }
     }
+
 
     public async Task<ResultDto<OrderItemReadDto>> UpdateOrderItemInstructions(Guid orderId, Guid orderItemId, OrderItemInstructionDto instructionDto)
     {
