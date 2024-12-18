@@ -38,6 +38,10 @@ public class OrderItemController : BaseApiController
     public async Task<IActionResult> UpdateOrderItemIngredients(Guid orderId, Guid orderItemId, [FromBody] List<OrderItemIngredientAddDto> ingredientDtos) =>
     HandleResult(await _orderItemService.UpdateOrderItemIngredients(orderId, orderItemId, ingredientDtos));
 
+    [HttpPut("{orderId}/items/{orderItemId}/instructions")]
+    public async Task<IActionResult> UpdateOrderItemInstructions(Guid orderId, Guid orderItemId, [FromBody] string specialInstructions) =>
+    HandleResult(await _orderItemService.UpdateOrderItemInstructions(orderId, orderItemId, specialInstructions));
+
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteOrderItem(Guid id) =>
         HandleResult(await _orderItemService.DeleteOrderItem(id));

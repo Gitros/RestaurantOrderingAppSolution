@@ -59,7 +59,7 @@ public class OrderItemService : IOrderItemService
                 .Include(oi => oi.MenuItem)
                 .FirstOrDefaultAsync(oi => oi.Id == id);
 
-            if(orderItem == null)
+            if (orderItem == null)
                 return ResultDto<OrderItemReadDto>
                     .Failure("Order item not found.", HttpStatusCode.NotFound);
 
@@ -233,6 +233,33 @@ public class OrderItemService : IOrderItemService
 
             return ResultDto<OrderItemReadDto>
                 .Success(updatedOrderItemDto, HttpStatusCode.OK);
+        }
+        catch (Exception ex)
+        {
+            return ResultDto<OrderItemReadDto>
+                .Failure($"An error occurred: {ex.Message}", HttpStatusCode.InternalServerError);
+        }
+    }
+
+    public async Task<ResultDto<OrderItemReadDto>> UpdateOrderItemInstructions(Guid orderId, Guid orderItemId, string specialInstructions)
+    {
+        try
+        {
+            var orderItem = await _orderingContext.OrderItems
+                .FirstOrDefaultAsync(oi => oi.Id == orderItemId && oi.OrderId == orderId);
+
+            if (orderItem == null)
+                return ResultDto<OrderItemReadDto>
+                    .Failure("Order item not found.", HttpStatusCode.NotFound);
+
+            orderItem.SpecialInstructions = specialInstructions;
+
+            await _orderingContext.SaveChangesAsync();
+
+            var updatedOrderItem = _mapper.Map<OrderItemReadDto>(orderItem);
+
+            return ResultDto<OrderItemReadDto>
+                .Success(updatedOrderItem, HttpStatusCode.OK);
         }
         catch (Exception ex)
         {
