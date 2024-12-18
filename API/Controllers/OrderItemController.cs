@@ -1,4 +1,5 @@
 ﻿using Application.Contracts;
+using Application.Dtos.OrderItemIngredients;
 using Application.Dtos.OrderItems;
 using Microsoft.AspNetCore.Mvc;
 
@@ -32,6 +33,10 @@ public class OrderItemController : BaseApiController
     [HttpPut("{orderId}/items/{orderItemId}/status")]
     public async Task<IActionResult> UpdateOrderItemStatus(Guid orderId, Guid orderItemId, [FromBody] OrderItemStatusDto statusDto) =>
     HandleResult(await _orderItemService.UpdateOrderItemStatus(orderId, orderItemId, statusDto));
+
+    [HttpPut("{orderId}/items/{orderItemId}/ingredients")]
+    public async Task<IActionResult> UpdateOrderItemIngredients(Guid orderId, Guid orderItemId, [FromBody] List<OrderItemIngredientAddDto> ingredientDtos) =>
+    HandleResult(await _orderItemService.UpdateOrderItemIngredients(orderId, orderItemId, ingredientDtos));
 
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteOrderItem(Guid id) =>

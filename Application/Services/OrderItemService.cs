@@ -1,5 +1,6 @@
 ﻿using Application.Contracts;
 using Application.Dtos.Common;
+using Application.Dtos.OrderItemIngredients;
 using Application.Dtos.OrderItems;
 using AutoMapper;
 using Domain;
@@ -169,6 +170,65 @@ public class OrderItemService : IOrderItemService
 
             await _orderingContext.SaveChangesAsync();
 
+            var updatedOrderItemDto = _mapper.Map<OrderItemReadDto>(orderItem);
+
+            return ResultDto<OrderItemReadDto>
+                .Success(updatedOrderItemDto, HttpStatusCode.OK);
+        }
+        catch (Exception ex)
+        {
+            return ResultDto<OrderItemReadDto>
+                .Failure($"An error occurred: {ex.Message}", HttpStatusCode.InternalServerError);
+        }
+    }
+
+    public async Task<ResultDto<OrderItemReadDto>> UpdateOrderItemIngredients(Guid orderId, Guid orderItemId, List<OrderItemIngredientAddDto> ingredientDtos)
+    {
+        try
+        {
+            var orderItem = await _orderingContext.OrderItems
+                .Include(oi => oi.OrderItemIngredients)
+                .FirstOrDefaultAsync(oi => oi.Id == orderItemId && oi.OrderId == orderId);
+
+            if (orderItem == null)
+                return ResultDto<OrderItemReadDto>
+                    .Failure("Order item not found.", HttpStatusCode.NotFound);
+
+            var validIngredients = await _orderingContext.Ingredients
+                .Where(i => ingredientDtos.Select(dto => dto.IngredientId).Contains(i.Id) && !i.IsDeleted)
+                .ToListAsync();
+
+            foreach (var ingredientDto in ingredientDtos)
+            {
+                var existingIngredient = orderItem.OrderItemIngredients
+                    .FirstOrDefault(oii => oii.IngredientId == ingredientDto.IngredientId);
+
+                if (existingIngredient != null)
+                {
+                    // Update quantity for existing ingredient
+                    existingIngredient.Quantity = ingredientDto.Quantity;
+                }
+                else
+                {
+                    // Add new ingredient
+                    var ingredient = validIngredients.FirstOrDefault(i => i.Id == ingredientDto.IngredientId);
+                    if (ingredient != null)
+                    {
+                        orderItem.OrderItemIngredients.Add(new OrderItemIngredient
+                        {
+                            IngredientId = ingredient.Id,
+                            Quantity = ingredientDto.Quantity,
+                            OrderItemId = orderItem.Id
+                        });
+                    }
+                }
+            }
+
+            var ingredientIdsToKeep = ingredientDtos.Select(dto => dto.IngredientId).ToList();
+
+            orderItem.OrderItemIngredients.RemoveAll(oii => !ingredientIdsToKeep.Contains(oii.IngredientId));
+
+            await _orderingContext.SaveChangesAsync();
             var updatedOrderItemDto = _mapper.Map<OrderItemReadDto>(orderItem);
 
             return ResultDto<OrderItemReadDto>
