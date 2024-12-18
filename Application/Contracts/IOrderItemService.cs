@@ -12,6 +12,7 @@ public interface IOrderItemService
     Task<ResultDto<OrderItemReadDto>> UpdateOrderItem(OrderItemUpdateDto orderItemUpdateDto, Guid id);
     Task<ResultDto<OrderItemReadDto>> UpdateOrderItemStatus(Guid orderId, Guid orderItemId, OrderItemStatusDto statusDto);
     Task<ResultDto<OrderItemReadDto>> UpdateOrderItemIngredients(Guid orderId, Guid orderItemId, List<OrderItemIngredientAddDto> ingredientDtos);
-    Task<ResultDto<OrderItemReadDto>> UpdateOrderItemInstructions(Guid orderId, Guid orderItemId, string specialInstructions);
+    Task<ResultDto<OrderItemReadDto>> UpdateOrderItemInstructions(Guid orderId, Guid orderItemId, OrderItemInstructionDto instructionDto);
+    Task<ResultDto<OrderItemReadDto>> UpdateOrderItemQuantity(Guid orderId, Guid orderItemId, OrderItemQuantityDto quantityDto);
     Task<ResultDto<bool>> DeleteOrderItem(Guid id);
 }
