@@ -35,27 +35,6 @@ public class OrderItemService : IOrderItemService
             var orderItem = _mapper.Map<OrderItem>(orderItemCreateDto);
             orderItem.OrderId = orderId;
 
-            if (orderItemCreateDto.Ingredients.Any())
-            {
-                var validIngredients = await _orderingContext.Ingredients
-                    .Where(i => orderItemCreateDto.Ingredients.Select(oi => oi.IngredientId).Contains(i.Id) && !i.IsDeleted)
-                    .ToListAsync();
-
-                foreach (var ingredientDto in orderItemCreateDto.Ingredients)
-                {
-                    var ingredient = validIngredients.FirstOrDefault(i => i.Id == ingredientDto.IngredientId);
-                    if (ingredient != null)
-                    {
-                        orderItem.OrderItemIngredients.Add(new OrderItemIngredient
-                        {
-                            IngredientId = ingredient.Id,
-                            Quantity = ingredientDto.Quantity,
-                            OrderItemId = orderItem.Id
-                        });
-                    }
-                }
-            }
-
             await _orderingContext.OrderItems.AddAsync(orderItem);
             await _orderingContext.SaveChangesAsync();
 
@@ -161,6 +140,39 @@ public class OrderItemService : IOrderItemService
 
             return ResultDto<OrderItemReadDto>
                 .Success(updatedOrderItem, HttpStatusCode.OK);
+        }
+        catch (Exception ex)
+        {
+            return ResultDto<OrderItemReadDto>
+                .Failure($"An error occurred: {ex.Message}", HttpStatusCode.InternalServerError);
+        }
+    }
+
+    public async Task<ResultDto<OrderItemReadDto>> UpdateOrderItemStatus(Guid orderId, Guid orderItemId, OrderItemStatusDto statusDto)
+    {
+        try
+        {
+            var orderItem = await _orderingContext.OrderItems
+                .FirstOrDefaultAsync(oi => oi.Id == orderItemId && oi.OrderId == orderId);
+
+            if (orderItem == null)
+                return ResultDto<OrderItemReadDto>
+                    .Failure("Order item not found.", HttpStatusCode.NotFound);
+
+            if (!Enum.TryParse<OrderItemStatus>(statusDto.OrderItemStatus, true, out var newStatus))
+            {
+                return ResultDto<OrderItemReadDto>
+                    .Failure("Invalid order item status provided.", HttpStatusCode.BadRequest);
+            }
+
+            orderItem.OrderItemStatus = newStatus;
+
+            await _orderingContext.SaveChangesAsync();
+
+            var updatedOrderItemDto = _mapper.Map<OrderItemReadDto>(orderItem);
+
+            return ResultDto<OrderItemReadDto>
+                .Success(updatedOrderItemDto, HttpStatusCode.OK);
         }
         catch (Exception ex)
         {

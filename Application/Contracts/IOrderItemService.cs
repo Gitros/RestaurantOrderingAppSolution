@@ -9,5 +9,6 @@ public interface IOrderItemService
     Task<ResultDto<OrderItemReadDto>> GetOrderItem(Guid id);
     Task<ResultDto<List<OrderItemReadDto>>> GetAllOrderItems();
     Task<ResultDto<OrderItemReadDto>> UpdateOrderItem(OrderItemUpdateDto orderItemUpdateDto, Guid id);
+    Task<ResultDto<OrderItemReadDto>> UpdateOrderItemStatus(Guid orderId, Guid orderItemId, OrderItemStatusDto statusDto);
     Task<ResultDto<bool>> DeleteOrderItem(Guid id);
 }
