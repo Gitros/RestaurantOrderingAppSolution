@@ -20,9 +20,9 @@ public class OrderItem
 
 public enum OrderItemStatus
 {
-    Pending = 0,
-    InProgress = 1,
-    ReadyToServe = 2,
-    Served = 3,
-    Cancelled = 4,
+    Pending,
+    InProgress,
+    ReadyToServe,
+    Served,
+    Cancelled,
 }

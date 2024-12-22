@@ -26,25 +26,13 @@ public class OrderItemController : BaseApiController
     public async Task<IActionResult> GetAllOrderItems() =>
         HandleResult(await _orderItemService.GetAllOrderItems());
 
-    [HttpPut("{id}")]
-    public async Task<IActionResult> UpdateOrderItem([FromBody] OrderItemUpdateDto orderItemUpdateDto, Guid id) =>
-        HandleResult(await _orderItemService.UpdateOrderItem(orderItemUpdateDto, id));
+    [HttpPut("{orderId}/items/{orderItemId}")]
+    public async Task<IActionResult> UpdateOrderItem([FromBody] OrderItemUpdateDto updateDto, Guid orderItemId, Guid orderId) =>
+        HandleResult(await _orderItemService.UpdateOrderItem(updateDto, orderItemId, orderId));
 
     [HttpPut("{orderId}/items/{orderItemId}/status")]
-    public async Task<IActionResult> UpdateOrderItemStatus(Guid orderId, Guid orderItemId, [FromBody] OrderItemStatusDto statusDto) =>
-    HandleResult(await _orderItemService.UpdateOrderItemStatus(orderId, orderItemId, statusDto));
-
-    [HttpPut("{orderId}/items/{orderItemId}/ingredients")]
-    public async Task<IActionResult> UpdateOrderItemIngredients(Guid orderId, Guid orderItemId, [FromBody] List<OrderItemIngredientAddDto> ingredientDtos) =>
-    HandleResult(await _orderItemService.UpdateOrderItemIngredients(orderId, orderItemId, ingredientDtos));
-
-    [HttpPut("{orderId}/items/{orderItemId}/instructions")]
-    public async Task<IActionResult> UpdateOrderItemInstructions(Guid orderId, Guid orderItemId, [FromBody] OrderItemInstructionDto instructionDto) =>
-    HandleResult(await _orderItemService.UpdateOrderItemInstructions(orderId, orderItemId, instructionDto));
-
-    [HttpPut("{orderId}/items/{orderItemId}/quantity")]
-    public async Task<IActionResult> UpdateOrderItemQuantity(Guid orderId, Guid orderItemId, [FromBody] OrderItemQuantityDto quantityDto) =>
-    HandleResult(await _orderItemService.UpdateOrderItemQuantity(orderId, orderItemId, quantityDto));
+    public async Task<IActionResult> UpdateOrderItemStatus([FromBody] OrderItemStatusDto statusDto, Guid orderId, Guid orderItemId) =>
+    HandleResult(await _orderItemService.UpdateOrderItemStatus(statusDto, orderId, orderItemId));
 
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteOrderItem(Guid id) =>
