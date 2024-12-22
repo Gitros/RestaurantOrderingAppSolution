@@ -179,13 +179,13 @@ public class OrderItemService : IOrderItemService
                 return ResultDto<OrderItemReadDto>
                     .Failure("Order item not found.", HttpStatusCode.NotFound);
 
-            if (!Enum.TryParse<OrderItemStatus>(statusDto.OrderItemStatus, true, out var newStatus))
+            if (!Enum.IsDefined(typeof(OrderItemStatus), statusDto.OrderItemStatus))
             {
                 return ResultDto<OrderItemReadDto>
                     .Failure("Invalid order item status provided.", HttpStatusCode.BadRequest);
             }
 
-            orderItem.OrderItemStatus = newStatus;
+            orderItem.OrderItemStatus = (OrderItemStatus)statusDto.OrderItemStatus;
 
             await _orderingContext.SaveChangesAsync();
 

@@ -102,7 +102,11 @@ namespace Infrastructure.Database.Migrations
                     OrderDateTime = table.Column<DateTime>(type: "TEXT", nullable: false),
                     TotalAmount = table.Column<decimal>(type: "TEXT", nullable: false),
                     OrderStatus = table.Column<int>(type: "INTEGER", nullable: false),
-                    TableId = table.Column<Guid>(type: "TEXT", nullable: false)
+                    OrderType = table.Column<int>(type: "INTEGER", nullable: false),
+                    PaymentMethod = table.Column<int>(type: "INTEGER", nullable: false),
+                    TableId = table.Column<Guid>(type: "TEXT", nullable: true),
+                    DeliveryInformationId = table.Column<Guid>(type: "TEXT", nullable: true),
+                    TakeawayInformationId = table.Column<Guid>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -140,6 +144,27 @@ namespace Infrastructure.Database.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "DeliveryInformation",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
+                    Address = table.Column<string>(type: "TEXT", nullable: true),
+                    PhoneNumber = table.Column<string>(type: "TEXT", nullable: true),
+                    DeliveryInstructions = table.Column<string>(type: "TEXT", nullable: true),
+                    OrderId = table.Column<Guid>(type: "TEXT", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_DeliveryInformation", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_DeliveryInformation_Orders_OrderId",
+                        column: x => x.OrderId,
+                        principalTable: "Orders",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "OrderItems",
                 columns: table => new
                 {
@@ -162,6 +187,26 @@ namespace Infrastructure.Database.Migrations
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_OrderItems_Orders_OrderId",
+                        column: x => x.OrderId,
+                        principalTable: "Orders",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "TakeawayInformation",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
+                    PhoneNumber = table.Column<string>(type: "TEXT", nullable: true),
+                    AdditionalInstructions = table.Column<string>(type: "TEXT", nullable: true),
+                    OrderId = table.Column<Guid>(type: "TEXT", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TakeawayInformation", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_TakeawayInformation_Orders_OrderId",
                         column: x => x.OrderId,
                         principalTable: "Orders",
                         principalColumn: "Id",
@@ -194,6 +239,12 @@ namespace Infrastructure.Database.Migrations
                 });
 
             migrationBuilder.CreateIndex(
+                name: "IX_DeliveryInformation_OrderId",
+                table: "DeliveryInformation",
+                column: "OrderId",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_MenuItems_MenuCategoryId",
                 table: "MenuItems",
                 column: "MenuCategoryId");
@@ -222,16 +273,28 @@ namespace Infrastructure.Database.Migrations
                 name: "IX_Orders_TableId",
                 table: "Orders",
                 column: "TableId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TakeawayInformation_OrderId",
+                table: "TakeawayInformation",
+                column: "OrderId",
+                unique: true);
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
+                name: "DeliveryInformation");
+
+            migrationBuilder.DropTable(
                 name: "MenuItemTags");
 
             migrationBuilder.DropTable(
                 name: "OrderItemIngredients");
+
+            migrationBuilder.DropTable(
+                name: "TakeawayInformation");
 
             migrationBuilder.DropTable(
                 name: "Tags");

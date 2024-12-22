@@ -38,16 +38,6 @@ public class OrderService : IOrderService
                 order.TableId = orderCreateDto.TableId.Value;
             }
 
-            if (orderCreateDto.OrderType == OrderType.Delivery)
-            {
-                if (string.IsNullOrWhiteSpace(orderCreateDto.DeliveryAddress))
-                {
-                    return ResultDto<OrderReadDto>
-                        .Failure("Delivery address is required for Delivery orders.", HttpStatusCode.BadRequest);
-                }
-                order.DeliveryAddress = orderCreateDto.DeliveryAddress;
-            }
-
             await _orderingContext.Orders.AddAsync(order);
             await _orderingContext.SaveChangesAsync();
 

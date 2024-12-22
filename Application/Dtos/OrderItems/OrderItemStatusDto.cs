@@ -2,5 +2,5 @@
 
 public class OrderItemStatusDto
 {
-    public string OrderItemStatus { get; set; }
+    public int OrderItemStatus { get; set; }
 }

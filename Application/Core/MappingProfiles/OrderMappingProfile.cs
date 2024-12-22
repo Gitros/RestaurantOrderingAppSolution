@@ -12,8 +12,7 @@ public class OrderMappingProfile : Profile
             .ForMember(dest => dest.OrderItems, opt => opt.MapFrom(src => src.OrderItems))
             .ForMember(dest => dest.OrderStatus, opt => opt.MapFrom(src => src.OrderStatus.ToString()))
             .ForMember(dest => dest.OrderType, opt => opt.MapFrom(src => src.OrderType.ToString()))
-            .ForMember(dest => dest.TableId, opt => opt.MapFrom(src => src.OrderType == OrderType.DineIn ? src.TableId : null))
-            .ForMember(dest => dest.DeliveryAddress, opt => opt.MapFrom(src => src.OrderType == OrderType.Delivery ? src.DeliveryAddress : null));
+            .ForMember(dest => dest.TableId, opt => opt.MapFrom(src => src.OrderType == OrderType.DineIn ? src.TableId : null));
 
         CreateMap<Order, OrderSummaryDto>()
             .ForMember(dest => dest.OrderStatus, opt => opt.MapFrom(src => src.OrderStatus.ToString()))

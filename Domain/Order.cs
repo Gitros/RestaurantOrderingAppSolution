@@ -1,38 +1,47 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace Domain;
+﻿namespace Domain;
 
 public class Order
 {
     public Guid Id { get; set; }
-    [Required]
-    public DateTime OrderDateTime { get; set; } = DateTime.UtcNow;
+    public DateTime OrderDateTime { get; set; }
     public decimal TotalAmount { get; set; }
+
     public OrderStatus OrderStatus { get; set; }
+    public OrderType OrderType { get; set; }
+
+    public PaymentMethod PaymentMethod { get; set; }
 
     public List<OrderItem> OrderItems { get; set; } = new List<OrderItem>();
 
     public Guid? TableId { get; set; }
     public Table Table { get; set; }
 
-    public OrderType OrderType { get; set; }
+    public Guid? DeliveryInformationId { get; set; }
+    public DeliveryInformation DeliveryInformation { get; set; }
 
-    public string DeliveryAddress { get; set; }
+    public Guid? TakeawayInformationId { get; set; }
+    public TakeawayInformation TakeawayInformation { get; set; }
 }
 
 public enum OrderStatus
 {
-    Pending = 0,
-    InProgress = 1,
-    Cooked = 2,
-    Delivered = 3,
-    Paid = 4,
-    Cancelled = 5,
+    Pending,
+    InProgress,
+    Cooked,
+    Delivered,
+    Paid,
+    Cancelled
 }
 
 public enum OrderType
 {
-    DineIn = 0,
-    Takeaway = 1,
-    Delivery = 2
+    DineIn,
+    Takeaway,
+    Delivery
+}
+
+public enum PaymentMethod
+{
+    Cash,
+    Card
 }
