@@ -17,22 +17,23 @@ namespace Infrastructure.Database.Migrations
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.10");
 
-            modelBuilder.Entity("Domain.DeliveryInformation", b =>
+            modelBuilder.Entity("Domain.CustomerInformation", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("Address")
+                    b.Property<string>("AdditionalInstructions")
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("DeliveryInstructions")
+                    b.Property<string>("Address")
                         .HasColumnType("TEXT");
 
                     b.Property<Guid>("OrderId")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("PhoneNumber")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
@@ -40,7 +41,7 @@ namespace Infrastructure.Database.Migrations
                     b.HasIndex("OrderId")
                         .IsUnique();
 
-                    b.ToTable("DeliveryInformation");
+                    b.ToTable("CustomerInformation");
                 });
 
             modelBuilder.Entity("Domain.Ingredient", b =>
@@ -59,6 +60,7 @@ namespace Infrastructure.Database.Migrations
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Name")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<decimal>("Price")
@@ -82,6 +84,7 @@ namespace Infrastructure.Database.Migrations
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Name")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
@@ -108,6 +111,7 @@ namespace Infrastructure.Database.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Name")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<decimal>("Price")
@@ -141,7 +145,7 @@ namespace Infrastructure.Database.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT");
 
-                    b.Property<Guid?>("DeliveryInformationId")
+                    b.Property<Guid?>("CustomerInformationId")
                         .HasColumnType("TEXT");
 
                     b.Property<DateTime>("OrderDateTime")
@@ -153,13 +157,10 @@ namespace Infrastructure.Database.Migrations
                     b.Property<int>("OrderType")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("PaymentMethod")
+                    b.Property<int?>("PaymentMethod")
                         .HasColumnType("INTEGER");
 
                     b.Property<Guid?>("TableId")
-                        .HasColumnType("TEXT");
-
-                    b.Property<Guid?>("TakeawayInformationId")
                         .HasColumnType("TEXT");
 
                     b.Property<decimal>("TotalAmount")
@@ -239,6 +240,7 @@ namespace Infrastructure.Database.Migrations
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Name")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<int>("NumberOfPeople")
@@ -262,6 +264,7 @@ namespace Infrastructure.Database.Migrations
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Name")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
@@ -269,34 +272,11 @@ namespace Infrastructure.Database.Migrations
                     b.ToTable("Tags");
                 });
 
-            modelBuilder.Entity("Domain.TakeawayInformation", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("AdditionalInstructions")
-                        .HasColumnType("TEXT");
-
-                    b.Property<Guid>("OrderId")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("PhoneNumber")
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("OrderId")
-                        .IsUnique();
-
-                    b.ToTable("TakeawayInformation");
-                });
-
-            modelBuilder.Entity("Domain.DeliveryInformation", b =>
+            modelBuilder.Entity("Domain.CustomerInformation", b =>
                 {
                     b.HasOne("Domain.Order", "Order")
-                        .WithOne("DeliveryInformation")
-                        .HasForeignKey("Domain.DeliveryInformation", "OrderId")
+                        .WithOne("CustomerInformation")
+                        .HasForeignKey("Domain.CustomerInformation", "OrderId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -381,17 +361,6 @@ namespace Infrastructure.Database.Migrations
                     b.Navigation("OrderItem");
                 });
 
-            modelBuilder.Entity("Domain.TakeawayInformation", b =>
-                {
-                    b.HasOne("Domain.Order", "Order")
-                        .WithOne("TakeawayInformation")
-                        .HasForeignKey("Domain.TakeawayInformation", "OrderId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Order");
-                });
-
             modelBuilder.Entity("Domain.Ingredient", b =>
                 {
                     b.Navigation("OrderItemIngredients");
@@ -409,11 +378,9 @@ namespace Infrastructure.Database.Migrations
 
             modelBuilder.Entity("Domain.Order", b =>
                 {
-                    b.Navigation("DeliveryInformation");
+                    b.Navigation("CustomerInformation");
 
                     b.Navigation("OrderItems");
-
-                    b.Navigation("TakeawayInformation");
                 });
 
             modelBuilder.Entity("Domain.OrderItem", b =>

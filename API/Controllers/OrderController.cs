@@ -5,36 +5,29 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers;
 
-public class OrderController : BaseApiController
+public class OrderController(IOrderService orderService) : BaseApiController
 {
-    private readonly IOrderService _orderService;
-
-    public OrderController(IOrderService orderService)
-    {
-        _orderService = orderService;
-    }
-
     [HttpPost]
     public async Task<IActionResult> CreateOrder([FromBody] OrderCreateDto orderCreateDto) =>
-        HandleResult(await _orderService.CreateOrder(orderCreateDto));
+        HandleResult(await orderService.CreateOrder(orderCreateDto));
 
     [HttpGet("{id}")]
     public async Task<IActionResult> GetOrder(Guid id) =>
-        HandleResult(await _orderService.GetOrder(id));
+        HandleResult(await orderService.GetOrder(id));
 
     [HttpGet]
     public async Task<IActionResult> GetAllOrders() =>
-        HandleResult(await _orderService.GetAllOrders());
+        HandleResult(await orderService.GetAllOrders());
 
     [HttpPut("{id}")]
     public async Task<IActionResult> UpdateOrder([FromBody] OrderUpdateDto orderUpdateDto, Guid id) =>
-        HandleResult(await _orderService.UpdateOrder(orderUpdateDto, id));
+        HandleResult(await orderService.UpdateOrder(orderUpdateDto, id));
 
     [HttpPut("{id}/status")]
     public async Task<IActionResult> UpdateOrderStatus([FromBody] OrderStatus newStatus, Guid id) =>
-        HandleResult(await _orderService.UpdateOrderStatus(newStatus, id));
+        HandleResult(await orderService.UpdateOrderStatus(newStatus, id));
 
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteOrder(Guid id) =>
-        HandleResult(await _orderService.DeleteOrder(id));
+        HandleResult(await orderService.DeleteOrder(id));
 }

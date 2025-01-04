@@ -2,25 +2,22 @@
 
 public class Order
 {
-    public Guid Id { get; set; }
-    public DateTime OrderDateTime { get; set; }
-    public decimal TotalAmount { get; set; }
+    public Guid Id { get; set; } = Guid.NewGuid();
+    public DateTime OrderDateTime { get; set; } = DateTime.UtcNow;
+    public decimal TotalAmount { get; set; } = 0;
 
-    public OrderStatus OrderStatus { get; set; }
-    public OrderType OrderType { get; set; }
+    public OrderStatus OrderStatus { get; set; } = OrderStatus.Pending;
+    public required OrderType OrderType { get; set; }
 
-    public PaymentMethod PaymentMethod { get; set; }
+    public PaymentMethod? PaymentMethod { get; set; }
 
-    public List<OrderItem> OrderItems { get; set; } = new List<OrderItem>();
+    public List<OrderItem> OrderItems { get; set; } = new();
 
     public Guid? TableId { get; set; }
-    public Table Table { get; set; }
+    public Table? Table { get; set; }
 
-    public Guid? DeliveryInformationId { get; set; }
-    public DeliveryInformation DeliveryInformation { get; set; }
-
-    public Guid? TakeawayInformationId { get; set; }
-    public TakeawayInformation TakeawayInformation { get; set; }
+    public Guid? CustomerInformationId { get; set; }
+    public CustomerInformation? CustomerInformation { get; set; }
 }
 
 public enum OrderStatus

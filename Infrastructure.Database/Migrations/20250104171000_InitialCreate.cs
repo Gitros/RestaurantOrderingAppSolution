@@ -16,7 +16,7 @@ namespace Infrastructure.Database.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "TEXT", nullable: false),
-                    Name = table.Column<string>(type: "TEXT", nullable: true),
+                    Name = table.Column<string>(type: "TEXT", nullable: false),
                     Price = table.Column<decimal>(type: "TEXT", nullable: false),
                     IsUsed = table.Column<bool>(type: "INTEGER", nullable: false),
                     IsDeleted = table.Column<bool>(type: "INTEGER", nullable: false),
@@ -32,7 +32,7 @@ namespace Infrastructure.Database.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "TEXT", nullable: false),
-                    Name = table.Column<string>(type: "TEXT", nullable: true),
+                    Name = table.Column<string>(type: "TEXT", nullable: false),
                     IsUsed = table.Column<bool>(type: "INTEGER", nullable: false),
                     IsDeleted = table.Column<bool>(type: "INTEGER", nullable: false)
                 },
@@ -46,7 +46,7 @@ namespace Infrastructure.Database.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "TEXT", nullable: false),
-                    Name = table.Column<string>(type: "TEXT", nullable: true),
+                    Name = table.Column<string>(type: "TEXT", nullable: false),
                     NumberOfPeople = table.Column<int>(type: "INTEGER", nullable: false),
                     IsOccupied = table.Column<bool>(type: "INTEGER", nullable: false),
                     IsUsed = table.Column<bool>(type: "INTEGER", nullable: false),
@@ -62,7 +62,7 @@ namespace Infrastructure.Database.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "TEXT", nullable: false),
-                    Name = table.Column<string>(type: "TEXT", nullable: true),
+                    Name = table.Column<string>(type: "TEXT", nullable: false),
                     IsUsed = table.Column<bool>(type: "INTEGER", nullable: false),
                     IsDeleted = table.Column<bool>(type: "INTEGER", nullable: false)
                 },
@@ -76,7 +76,7 @@ namespace Infrastructure.Database.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "TEXT", nullable: false),
-                    Name = table.Column<string>(type: "TEXT", nullable: true),
+                    Name = table.Column<string>(type: "TEXT", nullable: false),
                     Description = table.Column<string>(type: "TEXT", nullable: true),
                     Price = table.Column<decimal>(type: "TEXT", nullable: false),
                     IsUsed = table.Column<bool>(type: "INTEGER", nullable: false),
@@ -103,10 +103,9 @@ namespace Infrastructure.Database.Migrations
                     TotalAmount = table.Column<decimal>(type: "TEXT", nullable: false),
                     OrderStatus = table.Column<int>(type: "INTEGER", nullable: false),
                     OrderType = table.Column<int>(type: "INTEGER", nullable: false),
-                    PaymentMethod = table.Column<int>(type: "INTEGER", nullable: false),
+                    PaymentMethod = table.Column<int>(type: "INTEGER", nullable: true),
                     TableId = table.Column<Guid>(type: "TEXT", nullable: true),
-                    DeliveryInformationId = table.Column<Guid>(type: "TEXT", nullable: true),
-                    TakeawayInformationId = table.Column<Guid>(type: "TEXT", nullable: true)
+                    CustomerInformationId = table.Column<Guid>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -144,20 +143,20 @@ namespace Infrastructure.Database.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "DeliveryInformation",
+                name: "CustomerInformation",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "TEXT", nullable: false),
+                    PhoneNumber = table.Column<string>(type: "TEXT", nullable: false),
+                    AdditionalInstructions = table.Column<string>(type: "TEXT", nullable: true),
                     Address = table.Column<string>(type: "TEXT", nullable: true),
-                    PhoneNumber = table.Column<string>(type: "TEXT", nullable: true),
-                    DeliveryInstructions = table.Column<string>(type: "TEXT", nullable: true),
                     OrderId = table.Column<Guid>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_DeliveryInformation", x => x.Id);
+                    table.PrimaryKey("PK_CustomerInformation", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_DeliveryInformation_Orders_OrderId",
+                        name: "FK_CustomerInformation_Orders_OrderId",
                         column: x => x.OrderId,
                         principalTable: "Orders",
                         principalColumn: "Id",
@@ -194,26 +193,6 @@ namespace Infrastructure.Database.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "TakeawayInformation",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
-                    PhoneNumber = table.Column<string>(type: "TEXT", nullable: true),
-                    AdditionalInstructions = table.Column<string>(type: "TEXT", nullable: true),
-                    OrderId = table.Column<Guid>(type: "TEXT", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_TakeawayInformation", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_TakeawayInformation_Orders_OrderId",
-                        column: x => x.OrderId,
-                        principalTable: "Orders",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "OrderItemIngredients",
                 columns: table => new
                 {
@@ -239,8 +218,8 @@ namespace Infrastructure.Database.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_DeliveryInformation_OrderId",
-                table: "DeliveryInformation",
+                name: "IX_CustomerInformation_OrderId",
+                table: "CustomerInformation",
                 column: "OrderId",
                 unique: true);
 
@@ -273,28 +252,19 @@ namespace Infrastructure.Database.Migrations
                 name: "IX_Orders_TableId",
                 table: "Orders",
                 column: "TableId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_TakeawayInformation_OrderId",
-                table: "TakeawayInformation",
-                column: "OrderId",
-                unique: true);
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "DeliveryInformation");
+                name: "CustomerInformation");
 
             migrationBuilder.DropTable(
                 name: "MenuItemTags");
 
             migrationBuilder.DropTable(
                 name: "OrderItemIngredients");
-
-            migrationBuilder.DropTable(
-                name: "TakeawayInformation");
 
             migrationBuilder.DropTable(
                 name: "Tags");

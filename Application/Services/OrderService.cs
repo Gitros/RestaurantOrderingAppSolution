@@ -1,32 +1,21 @@
 ﻿using Application.Contracts;
 using Application.Dtos.Common;
-using Application.Dtos.OrderItems;
 using Application.Dtos.Orders;
 using AutoMapper;
 using Domain;
 using Infrastructure.Database;
 using Microsoft.EntityFrameworkCore;
-using System.ComponentModel.DataAnnotations;
 using System.Net;
 
 namespace Application.Services;
 
-public class OrderService : IOrderService
+public class OrderService(RestaurantOrderingContext orderingContext, IMapper mapper) : IOrderService
 {
-    private readonly RestaurantOrderingContext _orderingContext;
-    private readonly IMapper _mapper;
-
-    public OrderService(RestaurantOrderingContext orderingContext, IMapper mapper)
-    {
-        _orderingContext = orderingContext;
-        _mapper = mapper;
-    }
-
     public async Task<ResultDto<OrderReadDto>> CreateOrder(OrderCreateDto orderCreateDto)
     {
         try
         {
-            var order = _mapper.Map<Order>(orderCreateDto);
+            var order = mapper.Map<Order>(orderCreateDto);
 
             if(orderCreateDto.OrderType == OrderType.DineIn)
             {
@@ -38,10 +27,10 @@ public class OrderService : IOrderService
                 order.TableId = orderCreateDto.TableId.Value;
             }
 
-            await _orderingContext.Orders.AddAsync(order);
-            await _orderingContext.SaveChangesAsync();
+            await orderingContext.Orders.AddAsync(order);
+            await orderingContext.SaveChangesAsync();
 
-            var createdOrder = _mapper.Map<OrderReadDto>(order);
+            var createdOrder = mapper.Map<OrderReadDto>(order);
 
             return ResultDto<OrderReadDto>
                 .Success(createdOrder, HttpStatusCode.Created);
@@ -57,7 +46,7 @@ public class OrderService : IOrderService
     {
         try
         {
-            var order = await _orderingContext.Orders
+            var order = await orderingContext.Orders
                 .Include(o => o.OrderItems)
                     .ThenInclude(oi => oi.MenuItem)
                 .Include(o => o.OrderItems)
@@ -69,7 +58,7 @@ public class OrderService : IOrderService
                 return ResultDto<OrderReadDto>
                     .Failure("Order not found", HttpStatusCode.NotFound);
 
-            var orderDto = _mapper.Map<OrderReadDto>(order);
+            var orderDto = mapper.Map<OrderReadDto>(order);
 
             return ResultDto<OrderReadDto>
                 .Success(orderDto, HttpStatusCode.OK);
@@ -86,12 +75,12 @@ public class OrderService : IOrderService
     {
         try
         {
-            var orders = await _orderingContext.Orders
+            var orders = await orderingContext.Orders
                 .Include(o => o.OrderItems)
                     .ThenInclude(oi => oi.MenuItem)
                 .ToListAsync();
 
-            var ordersDto = _mapper.Map<List<OrderReadDto>>(orders);
+            var ordersDto = mapper.Map<List<OrderReadDto>>(orders);
 
             return ResultDto<List<OrderReadDto>>
                 .Success(ordersDto, HttpStatusCode.OK);
@@ -107,7 +96,7 @@ public class OrderService : IOrderService
     {
         try
         {
-            var orderToUpdate = await _orderingContext.Orders
+            var orderToUpdate = await orderingContext.Orders
                     .Include(o => o.OrderItems)
                     .FirstOrDefaultAsync(o => o.Id == id);
 
@@ -116,11 +105,11 @@ public class OrderService : IOrderService
                 return ResultDto<OrderReadDto>
                     .Failure("Order not found", HttpStatusCode.NotFound);
 
-            _mapper.Map(orderUpdateDto, orderToUpdate);
+            mapper.Map(orderUpdateDto, orderToUpdate);
 
-            await _orderingContext.SaveChangesAsync();
+            await orderingContext.SaveChangesAsync();
 
-            var updatedOrderDto = _mapper.Map<OrderReadDto>(orderToUpdate);
+            var updatedOrderDto = mapper.Map<OrderReadDto>(orderToUpdate);
 
             return ResultDto<OrderReadDto>
                 .Success(updatedOrderDto, HttpStatusCode.OK);
@@ -136,7 +125,7 @@ public class OrderService : IOrderService
     {
         try
         {
-            var order = await _orderingContext.Orders
+            var order = await orderingContext.Orders
                     .Include(o => o.OrderItems)
                     .FirstOrDefaultAsync(o => o.Id == id);
 
@@ -146,9 +135,9 @@ public class OrderService : IOrderService
                     .Failure("Order not found", HttpStatusCode.NotFound);
 
             order.OrderStatus = newStatus;
-            await _orderingContext.SaveChangesAsync();
+            await orderingContext.SaveChangesAsync();
 
-            var updatedOrderDto = _mapper.Map<OrderReadDto>(order);
+            var updatedOrderDto = mapper.Map<OrderReadDto>(order);
             return ResultDto<OrderReadDto>
                 .Success(updatedOrderDto, HttpStatusCode.OK);
         }
@@ -163,7 +152,7 @@ public class OrderService : IOrderService
     {
         try
         {
-            var orderToDelete = await _orderingContext.Orders
+            var orderToDelete = await orderingContext.Orders
                     .Include(o => o.OrderItems)
                     .FirstOrDefaultAsync(o => o.Id == id);
 
@@ -174,8 +163,8 @@ public class OrderService : IOrderService
                     .Failure("order not found", HttpStatusCode.NotFound);
             }
 
-            _orderingContext.Orders.Remove(orderToDelete);
-            await _orderingContext.SaveChangesAsync();
+            orderingContext.Orders.Remove(orderToDelete);
+            await orderingContext.SaveChangesAsync();
 
             return ResultDto<bool>
                 .Success(true, HttpStatusCode.NoContent);

@@ -18,9 +18,7 @@ public class RestaurantOrderingContext : DbContext
     public DbSet<MenuItemTag> MenuItemTags { get; set; }
     public DbSet<Ingredient> Ingredients { get; set; }
     public DbSet<OrderItemIngredient> OrderItemIngredients { get; set; }
-    public DbSet<DeliveryInformation> DeliveryInformation { get; set; }
-    public DbSet<TakeawayInformation> TakeawayInformation { get; set; }
-
+    public DbSet<CustomerInformation> CustomerInformation { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -32,17 +30,11 @@ public class RestaurantOrderingContext : DbContext
             .WithOne(oi => oi.Order)
             .HasForeignKey(oi => oi.OrderId);
 
-        // One-to-One: Order and DeliveryInformation
+        // One-to-One: Order and CustomerInformation
         modelBuilder.Entity<Order>()
-            .HasOne(o => o.DeliveryInformation)
-            .WithOne(di => di.Order)
-            .HasForeignKey<DeliveryInformation>(di => di.OrderId);
-
-        // One-to-One: Order and TakeawayInformation
-        modelBuilder.Entity<Order>()
-            .HasOne(o => o.TakeawayInformation)
-            .WithOne(ti => ti.Order)
-            .HasForeignKey<TakeawayInformation>(ti => ti.OrderId);
+            .HasOne(o => o.CustomerInformation)
+            .WithOne(ci => ci.Order)
+            .HasForeignKey<CustomerInformation>(ci => ci.OrderId);
 
         // OrderItem and MenuItem relationship
         modelBuilder.Entity<OrderItem>()
