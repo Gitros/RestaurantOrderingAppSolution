@@ -4,32 +4,25 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers;
 
-public class TagsController : BaseApiController
+public class TagsController(ITagService tagService) : BaseApiController
 {
-    private readonly ITagService _tagService;
-
-    public TagsController(ITagService tagService)
-    {
-        _tagService = tagService;
-    }
-
     [HttpPost]
     public async Task<IActionResult> CreateTag([FromBody] TagCreateDto tagCreateDto) =>
-        HandleResult(await _tagService.CreateTag(tagCreateDto));
+        HandleResult(await tagService.CreateTag(tagCreateDto));
 
     [HttpGet]
     public async Task<IActionResult> GetAllTags() =>
-        HandleResult(await _tagService.GetAllTags());
+        HandleResult(await tagService.GetAllTags());
 
     [HttpGet("{id}")]
     public async Task<IActionResult> GetTag(Guid id) =>
-        HandleResult(await _tagService.GetTag(id));
+        HandleResult(await tagService.GetTag(id));
 
     [HttpPut("{id}")]
     public async Task<IActionResult> UpdateTag([FromBody] TagUpdateDto tagUpdateDto, Guid id) =>
-        HandleResult(await _tagService.UpdateTag(tagUpdateDto, id));
+        HandleResult(await tagService.UpdateTag(tagUpdateDto, id));
 
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteTag(Guid id) =>
-        HandleResult(await _tagService.DeleteTag(id));
+        HandleResult(await tagService.DeleteTag(id));
 }
