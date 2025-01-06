@@ -1,4 +1,5 @@
-﻿using Application.Dtos.OrderItems;
+﻿using Application.Dtos.CustomerInformations;
+using Application.Dtos.OrderItems;
 
 namespace Application.Dtos.Orders;
 
@@ -11,7 +12,7 @@ public class OrderReadDto
     public string OrderType { get; set; } = null!;
 
     public Guid? TableId { get; set; }
-    public string? DeliveryAddress { get; set; }
+    public CustomerInformationReadDto? CustomerInformation { get; set; }
 
     public List<OrderItemSummaryDto> OrderItems { get; set; } = new List<OrderItemSummaryDto>();
 }

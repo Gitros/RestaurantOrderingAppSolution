@@ -1,6 +1,6 @@
 ﻿using Domain;
 
-namespace Application.Dtos.Orders;
+namespace Application.Dtos.Orders.OrderCreate;
 
 public class OrderCreateDto
 {

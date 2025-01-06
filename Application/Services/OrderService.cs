@@ -1,6 +1,7 @@
 ﻿using Application.Contracts;
 using Application.Dtos.Common;
 using Application.Dtos.Orders;
+using Application.Dtos.Orders.OrderCreate;
 using AutoMapper;
 using Domain;
 using Infrastructure.Database;
@@ -11,30 +12,85 @@ namespace Application.Services;
 
 public class OrderService(RestaurantOrderingContext orderingContext, IMapper mapper) : IOrderService
 {
-    public async Task<ResultDto<OrderReadDto>> CreateOrder(OrderCreateDto orderCreateDto)
+    public async Task<ResultDto<OrderReadDto>> CreateDineInOrder(DineInOrderCreateDto dineInOrderDto)
     {
         try
         {
-            var order = mapper.Map<Order>(orderCreateDto);
+            var dineInOrder = mapper.Map<Order>(dineInOrderDto);
 
-            if(orderCreateDto.OrderType == OrderType.DineIn)
-            {
-                if(!orderCreateDto.TableId.HasValue)
-                {
-                    return ResultDto<OrderReadDto>
-                        .Failure("TableId is required for DineIn orders.", HttpStatusCode.BadRequest);
-                }
-                order.TableId = orderCreateDto.TableId.Value;
-            }
+            var table = await orderingContext.Tables
+                .FirstOrDefaultAsync(t => t.Id == dineInOrderDto.TableId);
 
-            await orderingContext.Orders.AddAsync(order);
+            if (table == null)
+                return ResultDto<OrderReadDto>
+                    .Failure("Specified table does not exist.", HttpStatusCode.BadRequest);
+
+            if (table.IsOccupied)
+                return ResultDto<OrderReadDto>
+                    .Failure("The specified table is already occupied.", HttpStatusCode.Conflict);
+
+            table.IsOccupied = true;
+
+            await orderingContext.Orders.AddAsync(dineInOrder);
             await orderingContext.SaveChangesAsync();
 
-            var createdOrder = mapper.Map<OrderReadDto>(order);
+            var createdOrderDto = mapper.Map<OrderReadDto>(dineInOrder);
 
             return ResultDto<OrderReadDto>
-                .Success(createdOrder, HttpStatusCode.Created);
-        } 
+                .Success(createdOrderDto, HttpStatusCode.Created);
+        }
+        catch (Exception ex)
+        {
+            return ResultDto<OrderReadDto>
+                .Failure($"An error occurred: {ex.Message}", HttpStatusCode.InternalServerError);
+        }
+    }
+
+    public async Task<ResultDto<OrderReadDto>> CreateTakeawayOrder(TakeawayOrderCreateDto takeawayOrderDto)
+    {
+        try
+        {
+            var takeawayOrder = mapper.Map<Order>(takeawayOrderDto);
+
+            if(string.IsNullOrWhiteSpace(takeawayOrderDto.PhoneNumber))
+                return ResultDto<OrderReadDto>
+                    .Failure("Phone number is required for takeaway orders.", HttpStatusCode.BadRequest);
+
+            takeawayOrder.CustomerInformation = mapper.Map<CustomerInformation>(takeawayOrderDto);
+            takeawayOrder.CustomerInformation.OrderId = takeawayOrder.Id;
+
+            await orderingContext.Orders.AddAsync(takeawayOrder);
+            await orderingContext.SaveChangesAsync();
+
+            var orderReadDto = mapper.Map<OrderReadDto>(takeawayOrder);
+
+            return ResultDto<OrderReadDto>
+                .Success(orderReadDto, HttpStatusCode.Created);
+        }
+        catch (Exception ex)
+        {
+            return ResultDto<OrderReadDto>
+                .Failure($"An error occurred: {ex.Message}", HttpStatusCode.InternalServerError);
+        }
+    }
+
+    public async Task<ResultDto<OrderReadDto>> CreateDeliveryOrder(DeliveryOrderCreateDto deliveryOrderDto)
+    {
+        try
+        {
+            var deliveryOrder = mapper.Map<Order>(deliveryOrderDto);
+
+            deliveryOrder.CustomerInformation = mapper.Map<CustomerInformation>(deliveryOrderDto);
+            deliveryOrder.CustomerInformation.OrderId = deliveryOrder.Id;
+
+            await orderingContext.Orders.AddAsync(deliveryOrder);
+            await orderingContext.SaveChangesAsync();
+
+            var orderReadDto = mapper.Map<OrderReadDto>(deliveryOrder);
+
+            return ResultDto<OrderReadDto>
+                .Success(orderReadDto, HttpStatusCode.Created);
+        }
         catch (Exception ex)
         {
             return ResultDto<OrderReadDto>
@@ -78,6 +134,7 @@ public class OrderService(RestaurantOrderingContext orderingContext, IMapper map
             var orders = await orderingContext.Orders
                 .Include(o => o.OrderItems)
                     .ThenInclude(oi => oi.MenuItem)
+                .Include(o => o.CustomerInformation)
                 .ToListAsync();
 
             var ordersDto = mapper.Map<List<OrderReadDto>>(orders);
@@ -99,7 +156,6 @@ public class OrderService(RestaurantOrderingContext orderingContext, IMapper map
             var orderToUpdate = await orderingContext.Orders
                     .Include(o => o.OrderItems)
                     .FirstOrDefaultAsync(o => o.Id == id);
-
 
             if (orderToUpdate == null)
                 return ResultDto<OrderReadDto>
@@ -129,7 +185,6 @@ public class OrderService(RestaurantOrderingContext orderingContext, IMapper map
                     .Include(o => o.OrderItems)
                     .FirstOrDefaultAsync(o => o.Id == id);
 
-
             if (order == null)
                 return ResultDto<OrderReadDto>
                     .Failure("Order not found", HttpStatusCode.NotFound);
@@ -155,7 +210,6 @@ public class OrderService(RestaurantOrderingContext orderingContext, IMapper map
             var orderToDelete = await orderingContext.Orders
                     .Include(o => o.OrderItems)
                     .FirstOrDefaultAsync(o => o.Id == id);
-
 
             if (orderToDelete == null)
             {

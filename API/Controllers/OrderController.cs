@@ -1,5 +1,6 @@
 ﻿using Application.Contracts;
 using Application.Dtos.Orders;
+using Application.Dtos.Orders.OrderCreate;
 using Domain;
 using Microsoft.AspNetCore.Mvc;
 
@@ -7,9 +8,17 @@ namespace API.Controllers;
 
 public class OrderController(IOrderService orderService) : BaseApiController
 {
-    [HttpPost]
-    public async Task<IActionResult> CreateOrder([FromBody] OrderCreateDto orderCreateDto) =>
-        HandleResult(await orderService.CreateOrder(orderCreateDto));
+    [HttpPost("dinein")]
+    public async Task<IActionResult> CreateDineInOrder([FromBody] DineInOrderCreateDto dineInOrderDto) =>
+    HandleResult(await orderService.CreateDineInOrder(dineInOrderDto));
+
+    [HttpPost("takeaway")]
+    public async Task<IActionResult> CreateTakeawayOrder([FromBody] TakeawayOrderCreateDto takeawayOrderDto) =>
+        HandleResult(await orderService.CreateTakeawayOrder(takeawayOrderDto));
+
+    [HttpPost("delivery")]
+    public async Task<IActionResult> CreateDeliveryOrder([FromBody] DeliveryOrderCreateDto deliveryOrderDto) =>
+        HandleResult(await orderService.CreateDeliveryOrder(deliveryOrderDto));
 
     [HttpGet("{id}")]
     public async Task<IActionResult> GetOrder(Guid id) =>

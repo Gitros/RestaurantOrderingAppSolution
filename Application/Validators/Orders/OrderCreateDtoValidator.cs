@@ -1,4 +1,4 @@
-﻿using Application.Dtos.Orders;
+﻿using Application.Dtos.Orders.OrderCreate;
 using FluentValidation;
 
 namespace Application.Validators.Orders;

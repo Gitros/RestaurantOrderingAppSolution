@@ -15,6 +15,15 @@ public class CustomerInformationService(RestaurantOrderingContext orderingContex
     {
         try
         {
+            var order = await orderingContext.Orders
+                .FirstOrDefaultAsync(o => o.Id == orderId);
+
+            if (order == null)
+                return ResultDto<CustomerInformationReadDto>.Failure("Order not found.", HttpStatusCode.NotFound);
+
+            if (order.OrderType == OrderType.DineIn)
+                return ResultDto<CustomerInformationReadDto>.Failure("Customer information is not required for DineIn orders.", HttpStatusCode.BadRequest);
+
             var customerInformation = mapper.Map<CustomerInformation>(customerInformationCreateDto);
             customerInformation.OrderId = orderId;
 
