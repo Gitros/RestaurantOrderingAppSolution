@@ -9,27 +9,18 @@ using System.Net;
 
 namespace Application.Services;
 
-public class TagService : ITagService
+public class TagService(RestaurantOrderingContext orderingContext, IMapper mapper) : ITagService
 {
-    private readonly RestaurantOrderingContext _orderingContext;
-    private readonly IMapper _mapper;
-
-    public TagService(RestaurantOrderingContext orderingContext, IMapper mapper)
-    {
-        _orderingContext = orderingContext;
-        _mapper = mapper;
-    }
-
     public async Task<ResultDto<TagReadDto>> CreateTag(TagCreateDto tagCreateDto)
     {
         try
         {
-            var tag = _mapper.Map<Tag>(tagCreateDto);
+            var tag = mapper.Map<Tag>(tagCreateDto);
 
-            await _orderingContext.Tags.AddAsync(tag);
-            await _orderingContext.SaveChangesAsync();
+            await orderingContext.Tags.AddAsync(tag);
+            await orderingContext.SaveChangesAsync();
 
-            var createdTag = _mapper.Map<TagReadDto>(tag);
+            var createdTag = mapper.Map<TagReadDto>(tag);
 
             return ResultDto<TagReadDto>
                 .Success(createdTag, HttpStatusCode.Created);
@@ -45,10 +36,10 @@ public class TagService : ITagService
     {
         try
         {
-            var tags = await _orderingContext.Tags
+            var tags = await orderingContext.Tags
                 .ToListAsync();
 
-            var tagDtos = _mapper.Map<List<TagReadDto>>(tags);
+            var tagDtos = mapper.Map<List<TagReadDto>>(tags);
 
             return ResultDto<List<TagReadDto>>
                 .Success(tagDtos, HttpStatusCode.OK);
@@ -64,14 +55,14 @@ public class TagService : ITagService
     {
         try
         {
-            var tag = await _orderingContext.Tags
+            var tag = await orderingContext.Tags
                 .FirstOrDefaultAsync(t => t.Id == id);
 
             if (tag == null)
                 return ResultDto<TagReadDto>
                     .Failure("Tag not found.", HttpStatusCode.NotFound);
 
-            var tagDto = _mapper.Map<TagReadDto>(tag);
+            var tagDto = mapper.Map<TagReadDto>(tag);
 
             return ResultDto<TagReadDto>
                 .Success(tagDto, HttpStatusCode.OK);
@@ -87,16 +78,16 @@ public class TagService : ITagService
     {
         try
         {
-            var tag = await _orderingContext.Tags.FindAsync(id);
+            var tag = await orderingContext.Tags.FindAsync(id);
 
             if (tag == null)
                 return ResultDto<TagReadDto>
                     .Failure("Tag not found.", HttpStatusCode.NotFound);
 
-            _mapper.Map(tagUpdateDto, tag);
-            await _orderingContext.SaveChangesAsync();
+            mapper.Map(tagUpdateDto, tag);
+            await orderingContext.SaveChangesAsync();
 
-            var updatedTag = _mapper.Map<TagReadDto>(tag);
+            var updatedTag = mapper.Map<TagReadDto>(tag);
 
             return ResultDto<TagReadDto>
                 .Success(updatedTag, HttpStatusCode.OK);
@@ -112,7 +103,7 @@ public class TagService : ITagService
     {
         try
         {
-            var tag = await _orderingContext.Tags.FindAsync(id);
+            var tag = await orderingContext.Tags.FindAsync(id);
 
             if (tag == null)
                 return ResultDto<bool>
@@ -120,7 +111,7 @@ public class TagService : ITagService
 
             tag.IsDeleted = true;
             tag.IsUsed = false;
-            await _orderingContext.SaveChangesAsync();
+            await orderingContext.SaveChangesAsync();
 
             return ResultDto<bool>.Success(true, HttpStatusCode.OK);
         }

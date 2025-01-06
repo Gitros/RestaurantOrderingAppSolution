@@ -9,27 +9,18 @@ using System.Net;
 
 namespace Application.Services;
 
-public class MenuCategoryService : IMenuCategoryService
+public class MenuCategoryService(RestaurantOrderingContext orderingContext, IMapper mapper) : IMenuCategoryService
 {
-    private RestaurantOrderingContext _orderingContext;
-    private readonly IMapper _mapper;
-
-    public MenuCategoryService(RestaurantOrderingContext orderingContext, IMapper mapper)
-    {
-        _orderingContext = orderingContext;
-        _mapper = mapper;
-    }
-
     public async Task<ResultDto<MenuCategoryReadDto>> CreateMenuCategory(MenuCategoryCreateDto menuCategoryCreateDto)
     {
         try
         {
-            var menuCategory = _mapper.Map<MenuCategory>(menuCategoryCreateDto);
+            var menuCategory = mapper.Map<MenuCategory>(menuCategoryCreateDto);
 
-            await _orderingContext.MenuCategories.AddAsync(menuCategory);
-            await _orderingContext.SaveChangesAsync();
+            await orderingContext.MenuCategories.AddAsync(menuCategory);
+            await orderingContext.SaveChangesAsync();
 
-            var createdMenuCategory = _mapper.Map<MenuCategoryReadDto>(menuCategory);
+            var createdMenuCategory = mapper.Map<MenuCategoryReadDto>(menuCategory);
 
             return ResultDto<MenuCategoryReadDto>
                 .Success(createdMenuCategory, HttpStatusCode.Created);
@@ -45,11 +36,11 @@ public class MenuCategoryService : IMenuCategoryService
     {
         try
         {
-            var menuCategories = await _orderingContext.MenuCategories
+            var menuCategories = await orderingContext.MenuCategories
                 .Include(mc => mc.MenuItems)
                 .ToListAsync();
 
-            var menuCategoryDtos = _mapper.Map<List<MenuCategoryReadDto>>(menuCategories);
+            var menuCategoryDtos = mapper.Map<List<MenuCategoryReadDto>>(menuCategories);
 
             return ResultDto<List<MenuCategoryReadDto>>
                 .Success(menuCategoryDtos, HttpStatusCode.OK);
@@ -65,7 +56,7 @@ public class MenuCategoryService : IMenuCategoryService
     {
         try
         {
-            var menuCategory = await _orderingContext.MenuCategories
+            var menuCategory = await orderingContext.MenuCategories
                 .Include(mc => mc.MenuItems)
                 .FirstOrDefaultAsync(mc => mc.Id == id);
 
@@ -73,7 +64,7 @@ public class MenuCategoryService : IMenuCategoryService
                 return ResultDto<MenuCategoryReadDto>
                     .Failure("MenuCategory not found.", HttpStatusCode.NotFound);
 
-            var menuCategoryDto = _mapper.Map<MenuCategoryReadDto>(menuCategory);
+            var menuCategoryDto = mapper.Map<MenuCategoryReadDto>(menuCategory);
 
             return ResultDto<MenuCategoryReadDto>
                 .Success(menuCategoryDto, HttpStatusCode.OK);
@@ -89,16 +80,16 @@ public class MenuCategoryService : IMenuCategoryService
     {
         try
         {
-            var menuCategoryToUpdate = await _orderingContext.MenuCategories.FindAsync(id);
+            var menuCategoryToUpdate = await orderingContext.MenuCategories.FindAsync(id);
 
             if (menuCategoryToUpdate == null)
                 return ResultDto<MenuCategoryReadDto>
                     .Failure("MenuCategory not found or has been deleted.", HttpStatusCode.NotFound);
 
-            _mapper.Map(menuCategoryUpdateDto, menuCategoryToUpdate);
-            await _orderingContext.SaveChangesAsync();
+            mapper.Map(menuCategoryUpdateDto, menuCategoryToUpdate);
+            await orderingContext.SaveChangesAsync();
 
-            var updatedMenuCategory = _mapper.Map<MenuCategoryReadDto>(menuCategoryToUpdate);
+            var updatedMenuCategory = mapper.Map<MenuCategoryReadDto>(menuCategoryToUpdate);
 
             return ResultDto<MenuCategoryReadDto>
                 .Success(updatedMenuCategory, HttpStatusCode.OK);
@@ -114,7 +105,7 @@ public class MenuCategoryService : IMenuCategoryService
     {
         try
         {
-            var menuCategory = await _orderingContext.MenuCategories.FindAsync(id);
+            var menuCategory = await orderingContext.MenuCategories.FindAsync(id);
             if (menuCategory == null)
                 return ResultDto<bool>
                     .Failure("MenuCategory not found.", HttpStatusCode.NotFound);
@@ -122,7 +113,7 @@ public class MenuCategoryService : IMenuCategoryService
             menuCategory.IsDeleted = true;
             menuCategory.IsUsed = false;
 
-            await _orderingContext.SaveChangesAsync();
+            await orderingContext.SaveChangesAsync();
 
             return ResultDto<bool>
                 .Success(true, HttpStatusCode.OK);

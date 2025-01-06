@@ -9,27 +9,18 @@ using System.Net;
 
 namespace Application.Services;
 
-public class IngredientService : IIngredientService
+public class IngredientService(RestaurantOrderingContext orderingContext, IMapper mapper) : IIngredientService
 {
-    private RestaurantOrderingContext _orderingContext;
-    private readonly IMapper _mapper;
-
-    public IngredientService(RestaurantOrderingContext orderingContext, IMapper mapper)
-    {
-        _orderingContext = orderingContext;
-        _mapper = mapper;
-    }
-
     public async Task<ResultDto<IngredientReadDto>> CreateIngredient(IngredientCreateDto ingredientCreateDto)
     {
         try
         {
-            var ingredient = _mapper.Map<Ingredient>(ingredientCreateDto);
+            var ingredient = mapper.Map<Ingredient>(ingredientCreateDto);
 
-            await _orderingContext.Ingredients.AddAsync(ingredient);
-            await _orderingContext.SaveChangesAsync();
+            await orderingContext.Ingredients.AddAsync(ingredient);
+            await orderingContext.SaveChangesAsync();
 
-            var createdIngredient = _mapper.Map<IngredientReadDto>(ingredient);
+            var createdIngredient = mapper.Map<IngredientReadDto>(ingredient);
 
             return ResultDto<IngredientReadDto>
                 .Success(createdIngredient, HttpStatusCode.Created);
@@ -45,10 +36,10 @@ public class IngredientService : IIngredientService
     {
         try
         {
-            var ingredients = await _orderingContext.Ingredients
+            var ingredients = await orderingContext.Ingredients
                 .ToListAsync();
 
-            var ingredientDtos = _mapper.Map<List<IngredientReadDto>>(ingredients);
+            var ingredientDtos = mapper.Map<List<IngredientReadDto>>(ingredients);
 
             return ResultDto<List<IngredientReadDto>>
                 .Success(ingredientDtos, HttpStatusCode.OK);
@@ -64,14 +55,14 @@ public class IngredientService : IIngredientService
     {
         try
         {
-            var ingredient = await _orderingContext.Ingredients
+            var ingredient = await orderingContext.Ingredients
                 .FirstOrDefaultAsync(i => i.Id == id);
 
             if (ingredient == null)
                 return ResultDto<IngredientReadDto>
                     .Failure("Ingredient not found.", HttpStatusCode.NotFound);
 
-            var ingredientDto = _mapper.Map<IngredientReadDto>(ingredient);
+            var ingredientDto = mapper.Map<IngredientReadDto>(ingredient);
 
             return ResultDto<IngredientReadDto>
                 .Success(ingredientDto, HttpStatusCode.OK);
@@ -87,16 +78,16 @@ public class IngredientService : IIngredientService
     {
         try
         {
-            var ingredient = await _orderingContext.Ingredients.FindAsync(id);
+            var ingredient = await orderingContext.Ingredients.FindAsync(id);
 
             if (ingredient == null)
                 return ResultDto<IngredientReadDto>
                     .Failure("Ingredient not found.", HttpStatusCode.NotFound);
 
-            _mapper.Map(ingredientUpdateDto, ingredient);
-            await _orderingContext.SaveChangesAsync();
+            mapper.Map(ingredientUpdateDto, ingredient);
+            await orderingContext.SaveChangesAsync();
 
-            var updatedIngredientDto = _mapper.Map<IngredientReadDto>(ingredient);
+            var updatedIngredientDto = mapper.Map<IngredientReadDto>(ingredient);
 
             return ResultDto<IngredientReadDto>
                 .Success(updatedIngredientDto, HttpStatusCode.OK);
@@ -112,7 +103,7 @@ public class IngredientService : IIngredientService
     {
         try
         {
-            var ingredient = await _orderingContext.Ingredients.FindAsync(id);
+            var ingredient = await orderingContext.Ingredients.FindAsync(id);
 
             if (ingredient == null)
                 return ResultDto<bool>
@@ -120,7 +111,7 @@ public class IngredientService : IIngredientService
 
             ingredient.IsDeleted = true;
             ingredient.IsUsed = false;
-            await _orderingContext.SaveChangesAsync();
+            await orderingContext.SaveChangesAsync();
 
             return ResultDto<bool>
                 .Success(true, HttpStatusCode.OK);

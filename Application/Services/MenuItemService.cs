@@ -9,26 +9,17 @@ using System.Net;
 
 namespace Application.Services;
 
-public class MenuItemService : IMenuItemService
+public class MenuItemService(RestaurantOrderingContext orderingContext, IMapper mapper) : IMenuItemService
 {
-    private readonly RestaurantOrderingContext _orderingContext;
-    private readonly IMapper _mapper;
-
-    public MenuItemService(RestaurantOrderingContext orderingContext, IMapper mapper)
-    {
-        _orderingContext = orderingContext;
-        _mapper = mapper;
-    }
-
     public async Task<ResultDto<MenuItemReadDto>> CreateMenuItem(MenuItemCreateDto menuItemCreateDto)
     {
         try
         {
-            var menuItem = _mapper.Map<MenuItem>(menuItemCreateDto);
+            var menuItem = mapper.Map<MenuItem>(menuItemCreateDto);
 
             if (menuItemCreateDto.TagIds.Any())
             {
-                var validTags = await _orderingContext.Tags
+                var validTags = await orderingContext.Tags
                     .Where(t => menuItemCreateDto.TagIds.Contains(t.Id))
                     .ToListAsync();
 
@@ -42,10 +33,10 @@ public class MenuItemService : IMenuItemService
                 }
             }
 
-            await _orderingContext.MenuItems.AddAsync(menuItem);
-            await _orderingContext.SaveChangesAsync();
+            await orderingContext.MenuItems.AddAsync(menuItem);
+            await orderingContext.SaveChangesAsync();
 
-            var createdMenuItem = _mapper.Map<MenuItemReadDto>(menuItem);
+            var createdMenuItem = mapper.Map<MenuItemReadDto>(menuItem);
 
             return ResultDto<MenuItemReadDto>
                 .Success(createdMenuItem, HttpStatusCode.Created);
@@ -61,12 +52,12 @@ public class MenuItemService : IMenuItemService
     {
         try
         {
-            var menuItems = await _orderingContext.MenuItems
+            var menuItems = await orderingContext.MenuItems
                 .Include(mi => mi.MenuItemTags)
                 .ThenInclude(mt => mt.Tag)
                 .ToListAsync();
 
-            var menuItemDtos = _mapper.Map<List<MenuItemReadDto>>(menuItems);
+            var menuItemDtos = mapper.Map<List<MenuItemReadDto>>(menuItems);
 
             return ResultDto<List<MenuItemReadDto>>
                 .Success(menuItemDtos, HttpStatusCode.OK);
@@ -82,7 +73,7 @@ public class MenuItemService : IMenuItemService
     {
         try
         {
-            var menuItem = await _orderingContext.MenuItems
+            var menuItem = await orderingContext.MenuItems
                 .Include(mi => mi.MenuCategory)
                 .FirstOrDefaultAsync(mi => mi.Id == id);
 
@@ -90,7 +81,7 @@ public class MenuItemService : IMenuItemService
                 return ResultDto<MenuItemReadDto>
                     .Failure("Menu item not found.", HttpStatusCode.NotFound);
 
-            var menuItemDto = _mapper.Map<MenuItemReadDto>(menuItem);
+            var menuItemDto = mapper.Map<MenuItemReadDto>(menuItem);
 
             return ResultDto<MenuItemReadDto>
                 .Success(menuItemDto, HttpStatusCode.OK);
@@ -106,13 +97,13 @@ public class MenuItemService : IMenuItemService
     {
         try
         {
-            var menuItems = await _orderingContext.MenuItems
+            var menuItems = await orderingContext.MenuItems
                 .Where(mi => mi.MenuCategoryId == categoryId && !mi.IsDeleted)
                 .Include(mi => mi.MenuItemTags)
                     .ThenInclude(mt => mt.Tag)
                 .ToListAsync();
 
-            var menuItemDtos = _mapper.Map<List<MenuItemReadDto>>(menuItems);
+            var menuItemDtos = mapper.Map<List<MenuItemReadDto>>(menuItems);
 
             return ResultDto<List<MenuItemReadDto>>
                 .Success(menuItemDtos, HttpStatusCode.OK);
@@ -128,7 +119,7 @@ public class MenuItemService : IMenuItemService
     {
         try
         {
-            var menuItem = await _orderingContext.MenuItems
+            var menuItem = await orderingContext.MenuItems
                 .Include(mi => mi.MenuItemTags)
                 .FirstOrDefaultAsync(mi => mi.Id == id);
 
@@ -136,13 +127,13 @@ public class MenuItemService : IMenuItemService
                 return ResultDto<MenuItemReadDto>
                     .Failure("Menu item not found.", HttpStatusCode.NotFound);
 
-            _mapper.Map(menuItemUpdateDto, menuItem);
+            mapper.Map(menuItemUpdateDto, menuItem);
 
             menuItem.MenuItemTags.Clear();
 
             if (menuItemUpdateDto.TagIds.Any())
             {
-                var validTags = await _orderingContext.Tags
+                var validTags = await orderingContext.Tags
                     .Where(t => menuItemUpdateDto.TagIds.Contains(t.Id))
                     .ToListAsync();
 
@@ -156,9 +147,9 @@ public class MenuItemService : IMenuItemService
                 }
             }
 
-            await _orderingContext.SaveChangesAsync();
+            await orderingContext.SaveChangesAsync();
 
-            var updatedMenuItem = _mapper.Map<MenuItemReadDto>(menuItem);
+            var updatedMenuItem = mapper.Map<MenuItemReadDto>(menuItem);
 
             return ResultDto<MenuItemReadDto>
                 .Success(updatedMenuItem, HttpStatusCode.OK);
@@ -175,7 +166,7 @@ public class MenuItemService : IMenuItemService
     {
         try
         {
-            var menuItemToDelete = await _orderingContext.MenuItems.FindAsync(id);
+            var menuItemToDelete = await orderingContext.MenuItems.FindAsync(id);
 
             if (menuItemToDelete == null)
                 return ResultDto<bool>
@@ -184,7 +175,7 @@ public class MenuItemService : IMenuItemService
             menuItemToDelete.IsDeleted = true;
             menuItemToDelete.IsUsed = false;
 
-            await _orderingContext.SaveChangesAsync();
+            await orderingContext.SaveChangesAsync();
 
             return ResultDto<bool>
                 .Success(true, HttpStatusCode.OK);

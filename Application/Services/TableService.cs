@@ -9,27 +9,18 @@ using System.Net;
 
 namespace Application.Services;
 
-public class TableService : ITableService
+public class TableService(RestaurantOrderingContext orderingContext, IMapper mapper) : ITableService
 {
-    private readonly RestaurantOrderingContext _orderingContext;
-    private readonly IMapper _mapper;
-
-    public TableService(RestaurantOrderingContext orderingContext, IMapper mapper)
-    {
-        _orderingContext = orderingContext;
-        _mapper = mapper;
-    }
-
     public async Task<ResultDto<TableReadDto>> CreateTable(TableCreateDto tableCreateDto)
     {
         try
         {
-            var table = _mapper.Map<Table>(tableCreateDto);
+            var table = mapper.Map<Table>(tableCreateDto);
 
-            await _orderingContext.Tables.AddAsync(table);
-            await _orderingContext.SaveChangesAsync();
+            await orderingContext.Tables.AddAsync(table);
+            await orderingContext.SaveChangesAsync();
 
-            var createdTableDto = _mapper.Map<TableReadDto>(table);
+            var createdTableDto = mapper.Map<TableReadDto>(table);
 
             return ResultDto<TableReadDto>
                 .Success(createdTableDto, HttpStatusCode.Created);
@@ -45,7 +36,7 @@ public class TableService : ITableService
     {
         try
         {
-            var table = await _orderingContext.Tables
+            var table = await orderingContext.Tables
                 .Include(t => t.Orders)
                 .ThenInclude(o => o.OrderItems)
                 .FirstOrDefaultAsync(t => t.Id == id && t.IsUsed && !t.IsDeleted);
@@ -54,7 +45,7 @@ public class TableService : ITableService
                 return ResultDto<TableSummaryDto>
                     .Failure("Table not found or deleted.", HttpStatusCode.NotFound);
 
-            var tableDto = _mapper.Map<TableSummaryDto>(table);
+            var tableDto = mapper.Map<TableSummaryDto>(table);
 
             return ResultDto<TableSummaryDto>
                 .Success(tableDto, HttpStatusCode.OK);
@@ -70,12 +61,12 @@ public class TableService : ITableService
     {
         try
         {
-            var tables = await _orderingContext.Tables
+            var tables = await orderingContext.Tables
             .Include(t => t.Orders)
             .Where(t => t.IsUsed && !t.IsDeleted)
             .ToListAsync();
 
-            var tablesDto = _mapper.Map<List<TableReadDto>>(tables);
+            var tablesDto = mapper.Map<List<TableReadDto>>(tables);
 
             return ResultDto<List<TableReadDto>>
                 .Success(tablesDto, HttpStatusCode.OK);
@@ -91,17 +82,17 @@ public class TableService : ITableService
     {
         try
         {
-            var tableToUpdate = await _orderingContext.Tables.FindAsync(id);
+            var tableToUpdate = await orderingContext.Tables.FindAsync(id);
 
             if (tableToUpdate == null)
                 return ResultDto<TableReadDto>
                     .Failure("Table not found.", HttpStatusCode.NotFound);
 
-            _mapper.Map(tableUpdateDto, tableToUpdate);
+            mapper.Map(tableUpdateDto, tableToUpdate);
 
-            await _orderingContext.SaveChangesAsync();
+            await orderingContext.SaveChangesAsync();
 
-            var updatedTable = _mapper.Map<TableReadDto>(tableToUpdate);
+            var updatedTable = mapper.Map<TableReadDto>(tableToUpdate);
 
             return ResultDto<TableReadDto>
                 .Success(updatedTable, HttpStatusCode.OK);
@@ -117,7 +108,7 @@ public class TableService : ITableService
     {
         try
         {
-            var table = await _orderingContext.Tables.FindAsync(id);
+            var table = await orderingContext.Tables.FindAsync(id);
 
             if (table == null)
                 return ResultDto<TableReadDto>
@@ -130,9 +121,9 @@ public class TableService : ITableService
 
             table.IsOccupied = tableOccupancyDto.IsOccupied;
 
-            await _orderingContext.SaveChangesAsync();
+            await orderingContext.SaveChangesAsync();
 
-            var updatedTableOccupancy = _mapper.Map<TableReadDto>(table);
+            var updatedTableOccupancy = mapper.Map<TableReadDto>(table);
 
             return ResultDto<TableReadDto>
                 .Success(updatedTableOccupancy, HttpStatusCode.OK);
@@ -148,7 +139,7 @@ public class TableService : ITableService
     {
         try
         {
-            var table = await _orderingContext.Tables.FindAsync(id);
+            var table = await orderingContext.Tables.FindAsync(id);
             if(table == null)
                 return ResultDto<bool>
                     .Failure("Table not found.", HttpStatusCode.NotFound);
@@ -156,8 +147,8 @@ public class TableService : ITableService
             table.IsDeleted = true;
             table.IsOccupied = false;
 
-            _orderingContext.Tables.Update(table);
-            await _orderingContext.SaveChangesAsync();
+            orderingContext.Tables.Update(table);
+            await orderingContext.SaveChangesAsync();
 
             return ResultDto<bool>
                 .Success(true, HttpStatusCode.OK);
