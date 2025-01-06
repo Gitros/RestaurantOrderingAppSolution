@@ -5,8 +5,8 @@ namespace Application.Dtos.Common;
 public class ResultDto<T>
 {
     public bool IsSuccess { get; set; } = true;
-    public T Data { get; set; }
-    public string ErrorMessage { get; set; }
+    public T? Data { get; set; }
+    public string? ErrorMessage { get; set; }
     public HttpStatusCode HttpStatusCode { get; set; }
 
     public static ResultDto<T> Success(T data, HttpStatusCode httpStatusCode) => 

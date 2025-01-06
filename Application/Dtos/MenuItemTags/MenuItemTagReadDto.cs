@@ -3,5 +3,5 @@
 public class MenuItemTagReadDto
 {
     public Guid TagId { get; set; }
-    public string TagName { get; set; }
+    public string TagName { get; set; } = null!;
 }

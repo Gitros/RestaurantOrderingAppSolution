@@ -3,7 +3,7 @@
 public class IngredientReadDto
 {
     public Guid Id { get; set; }
-    public string Name { get; set; }
+    public string Name { get; set; } = null!;
     public decimal Price { get; set; }
-    public string IngredientType { get; set; }
+    public string IngredientType { get; set; } = null!;
 }
