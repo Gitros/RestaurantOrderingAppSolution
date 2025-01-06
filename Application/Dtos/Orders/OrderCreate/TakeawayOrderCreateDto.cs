@@ -1,5 +1,4 @@
-﻿using Application.Dtos.CustomerInformations;
-using Application.Dtos.OrderItems;
+﻿using Application.Dtos.OrderItems;
 
 namespace Application.Dtos.Orders.OrderCreate;
 

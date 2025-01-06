@@ -1,5 +1,6 @@
 ﻿using Application.Contracts;
 using Application.Dtos.Common;
+using Application.Dtos.OrderItems;
 using Application.Dtos.Orders;
 using Application.Dtos.Orders.OrderCreate;
 using AutoMapper;
@@ -12,6 +13,30 @@ namespace Application.Services;
 
 public class OrderService(RestaurantOrderingContext orderingContext, IMapper mapper) : IOrderService
 {
+    private async Task<List<OrderItem>> PopulateOrderItemsAsync(IEnumerable<OrderItemCreateDto> orderItemDtos, Guid orderId)
+    {
+        var menuItemIds = orderItemDtos.Select(oi => oi.MenuItemId).Distinct();
+        var menuItems = await orderingContext.MenuItems
+            .Where(mi => menuItemIds.Contains(mi.Id))
+            .ToDictionaryAsync(mi => mi.Id);
+
+        var orderItems = new List<OrderItem>();
+        foreach (var itemDto in orderItemDtos)
+        {
+            if (!menuItems.TryGetValue(itemDto.MenuItemId, out var menuItem))
+            {
+                throw new KeyNotFoundException($"MenuItem with ID {itemDto.MenuItemId} not found.");
+            }
+
+            var orderItem = mapper.Map<OrderItem>(itemDto);
+            orderItem.Price = menuItem.Price;
+            orderItem.OrderId = orderId;
+
+            orderItems.Add(orderItem);
+        }
+
+        return orderItems;
+    }
     public async Task<ResultDto<OrderReadDto>> CreateDineInOrder(DineInOrderCreateDto dineInOrderDto)
     {
         try
@@ -30,6 +55,10 @@ public class OrderService(RestaurantOrderingContext orderingContext, IMapper map
                     .Failure("The specified table is already occupied.", HttpStatusCode.Conflict);
 
             table.IsOccupied = true;
+
+
+            dineInOrder.OrderItems = await PopulateOrderItemsAsync(dineInOrderDto.OrderItems, dineInOrder.Id);
+            dineInOrder.TotalAmount = dineInOrder.OrderItems.Sum(oi => oi.Price * oi.Quantity);
 
             await orderingContext.Orders.AddAsync(dineInOrder);
             await orderingContext.SaveChangesAsync();
@@ -59,6 +88,9 @@ public class OrderService(RestaurantOrderingContext orderingContext, IMapper map
             takeawayOrder.CustomerInformation = mapper.Map<CustomerInformation>(takeawayOrderDto);
             takeawayOrder.CustomerInformation.OrderId = takeawayOrder.Id;
 
+            takeawayOrder.OrderItems = await PopulateOrderItemsAsync(takeawayOrderDto.OrderItems, takeawayOrder.Id);
+            takeawayOrder.TotalAmount = takeawayOrder.OrderItems.Sum(oi => oi.Price * oi.Quantity);
+
             await orderingContext.Orders.AddAsync(takeawayOrder);
             await orderingContext.SaveChangesAsync();
 
@@ -82,6 +114,9 @@ public class OrderService(RestaurantOrderingContext orderingContext, IMapper map
 
             deliveryOrder.CustomerInformation = mapper.Map<CustomerInformation>(deliveryOrderDto);
             deliveryOrder.CustomerInformation.OrderId = deliveryOrder.Id;
+
+            deliveryOrder.OrderItems = await PopulateOrderItemsAsync(deliveryOrderDto.OrderItems, deliveryOrder.Id);
+            deliveryOrder.TotalAmount = deliveryOrder.OrderItems.Sum(oi => oi.Price * oi.Quantity);
 
             await orderingContext.Orders.AddAsync(deliveryOrder);
             await orderingContext.SaveChangesAsync();
