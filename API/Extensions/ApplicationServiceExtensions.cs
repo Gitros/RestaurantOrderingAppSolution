@@ -1,6 +1,6 @@
 ﻿using Application.Contracts;
 using Application.Services;
-using Application.Validators.Orders;
+using Application.Validators.Tables;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 
@@ -22,7 +22,7 @@ public static class ApplicationServiceExtensions
 
         // FluentValidation
         services.AddFluentValidationAutoValidation();
-        services.AddValidatorsFromAssemblyContaining<OrderCreateDtoValidator>();
+        services.AddValidatorsFromAssemblyContaining<TableCreateDtoValidator>();
 
         // Automapper
         services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());

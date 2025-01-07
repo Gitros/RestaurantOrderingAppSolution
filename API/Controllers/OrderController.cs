@@ -21,6 +21,10 @@ public class OrderController(IOrderService orderService) : BaseApiController
     public async Task<IActionResult> CreateDeliveryOrder([FromBody] DeliveryOrderCreateDto deliveryOrderDto) =>
         HandleResult(await orderService.CreateDeliveryOrder(deliveryOrderDto));
 
+    [HttpPost("{orderId}/item")]
+    public async Task<IActionResult> AddOrderItem([FromBody] OrderItemCreateDto orderItemDto, Guid orderId) =>
+        HandleResult(await orderService.AddOrderItem(orderItemDto, orderId));
+
     [HttpGet("{id}")]
     public async Task<IActionResult> GetOrder(Guid id) =>
         HandleResult(await orderService.GetOrder(id));
@@ -28,10 +32,6 @@ public class OrderController(IOrderService orderService) : BaseApiController
     [HttpGet]
     public async Task<IActionResult> GetAllOrders() =>
         HandleResult(await orderService.GetAllOrders());
-
-    [HttpPut("{id}")]
-    public async Task<IActionResult> UpdateOrder([FromBody] OrderUpdateDto orderUpdateDto, Guid id) =>
-        HandleResult(await orderService.UpdateOrder(orderUpdateDto, id));
 
     [HttpPut("{orderId}/change-table")]
     public async Task<IActionResult> ChangeOrderTable(Guid orderId, [FromBody] Guid newTableId) =>
@@ -44,11 +44,6 @@ public class OrderController(IOrderService orderService) : BaseApiController
     [HttpPut("{orderId}/type")]
     public async Task<IActionResult> UpdateOrderType([FromQuery] OrderType newOrderType, [FromBody] OrderUpdateTypeDto updateTypeDto, Guid orderId) =>
     HandleResult(await orderService.UpdateOrderType(newOrderType, updateTypeDto, orderId));
-
-
-    [HttpPost("{orderId}/item")]
-    public async Task<IActionResult> AddOrderItem([FromBody] OrderItemCreateDto orderItemDto, Guid orderId) =>
-        HandleResult(await orderService.AddOrderItem(orderItemDto, orderId));
 
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteOrder(Guid id) =>
