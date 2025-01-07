@@ -213,6 +213,62 @@ public class OrderService(RestaurantOrderingContext orderingContext, IMapper map
         }
     }
 
+    public async Task<ResultDto<OrderReadDto>> ChangeOrderTable(Guid orderId, Guid newTableId)
+    {
+        try
+        {
+            var order = await orderingContext.Orders
+                .Include(o => o.Table)
+                .FirstOrDefaultAsync(o => o.Id == orderId);
+
+            if (order == null)
+                return ResultDto<OrderReadDto>
+                    .Failure("Order not found.", HttpStatusCode.NotFound);
+
+            if (order.TableId == null)
+                return ResultDto<OrderReadDto>
+                    .Failure("This order is not associated with a table.", HttpStatusCode.BadRequest);
+
+            var newTable = await orderingContext.Tables.FirstOrDefaultAsync(t => t.Id == newTableId);
+
+            if (newTable == null)
+                return ResultDto<OrderReadDto>
+                    .Failure("Specified table does not exist.", HttpStatusCode.BadRequest);
+
+            if (newTable.IsOccupied)
+                return ResultDto<OrderReadDto>
+                    .Failure("The specified table is already occupied.", HttpStatusCode.Conflict);
+
+            if (order.TableId.HasValue)
+            {
+                var currentTable = await orderingContext.Tables.FirstOrDefaultAsync(t => t.Id == order.TableId);
+                if (currentTable != null)
+                {
+                    currentTable.IsOccupied = false;
+                    orderingContext.Tables.Update(currentTable);
+                }
+            }
+
+            newTable.IsOccupied = true;
+            order.TableId = newTableId;
+
+            orderingContext.Orders.Update(order);
+            orderingContext.Tables.Update(newTable);
+
+            await orderingContext.SaveChangesAsync();
+
+            var updatedOrderDto = mapper.Map<OrderReadDto>(order);
+
+            return ResultDto<OrderReadDto>
+                .Success(updatedOrderDto, HttpStatusCode.OK);
+        }
+        catch (Exception ex)
+        {
+            return ResultDto<OrderReadDto>
+                .Failure($"An error occurred: {ex.Message}", HttpStatusCode.InternalServerError);
+        }
+    }
+
     public async Task<ResultDto<OrderReadDto>> UpdateOrderStatus(OrderStatus newStatus, Guid id)
     {
         try
