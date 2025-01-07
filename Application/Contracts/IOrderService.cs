@@ -1,4 +1,5 @@
 ﻿using Application.Dtos.Common;
+using Application.Dtos.OrderItems;
 using Application.Dtos.Orders;
 using Application.Dtos.Orders.OrderCreate;
 using Domain;
@@ -14,5 +15,6 @@ public interface IOrderService
     Task<ResultDto<List<OrderReadDto>>> GetAllOrders();
     Task<ResultDto<OrderReadDto>> UpdateOrder(OrderUpdateDto orderUpdateDto, Guid id);
     Task<ResultDto<OrderReadDto>> UpdateOrderStatus(OrderStatus newStatus, Guid id);
+    Task<ResultDto<OrderReadDto>> AddOrderItem(OrderItemCreateDto orderItemDto, Guid orderId);
     Task<ResultDto<bool>> DeleteOrder(Guid id);
 }

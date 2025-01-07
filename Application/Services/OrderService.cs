@@ -37,6 +37,7 @@ public class OrderService(RestaurantOrderingContext orderingContext, IMapper map
 
         return orderItems;
     }
+
     public async Task<ResultDto<OrderReadDto>> CreateDineInOrder(DineInOrderCreateDto dineInOrderDto)
     {
         try
@@ -228,6 +229,52 @@ public class OrderService(RestaurantOrderingContext orderingContext, IMapper map
             await orderingContext.SaveChangesAsync();
 
             var updatedOrderDto = mapper.Map<OrderReadDto>(order);
+            return ResultDto<OrderReadDto>
+                .Success(updatedOrderDto, HttpStatusCode.OK);
+        }
+        catch (Exception ex)
+        {
+            return ResultDto<OrderReadDto>
+                .Failure($"An error occurred: {ex.Message}", HttpStatusCode.InternalServerError);
+        }
+    }
+
+    public async Task<ResultDto<OrderReadDto>> AddOrderItem(OrderItemCreateDto orderItemDto, Guid orderId)
+    {
+        try
+        {
+            var order = await orderingContext.Orders
+                .Include(o => o.OrderItems)
+                .FirstOrDefaultAsync(o => o.Id == orderId);
+
+            if(order == null)
+                return ResultDto<OrderReadDto>
+                    .Failure("Order not found.", HttpStatusCode.NotFound);
+
+            var menuItem = await orderingContext.MenuItems
+                .FirstOrDefaultAsync(mi => mi.Id == orderItemDto.MenuItemId);
+
+            if (menuItem == null)
+                return ResultDto<OrderReadDto>
+                    .Failure($"MenuItem with ID {orderItemDto.MenuItemId} not found.", HttpStatusCode.BadRequest);
+
+            var existingItem = order.OrderItems.FirstOrDefault(oi => oi.MenuItemId == orderItemDto.MenuItemId);
+            if (existingItem != null)
+                return ResultDto<OrderReadDto>
+                    .Failure($"Order already contains an item with MenuItemId {orderItemDto.MenuItemId}.", HttpStatusCode.Conflict);
+
+            var orderItem = mapper.Map<OrderItem>(orderItemDto);
+            orderItem.Price = menuItem.Price;
+            orderItem.OrderId = orderId;
+
+            await orderingContext.OrderItems.AddAsync(orderItem);
+
+            order.TotalAmount += orderItem.Price * orderItem.Quantity;
+
+            await orderingContext.SaveChangesAsync();
+
+            var updatedOrderDto = mapper.Map<OrderReadDto>(order);
+
             return ResultDto<OrderReadDto>
                 .Success(updatedOrderDto, HttpStatusCode.OK);
         }

@@ -1,4 +1,5 @@
 ﻿using Application.Contracts;
+using Application.Dtos.OrderItems;
 using Application.Dtos.Orders;
 using Application.Dtos.Orders.OrderCreate;
 using Domain;
@@ -35,6 +36,10 @@ public class OrderController(IOrderService orderService) : BaseApiController
     [HttpPut("{id}/status")]
     public async Task<IActionResult> UpdateOrderStatus([FromBody] OrderStatus newStatus, Guid id) =>
         HandleResult(await orderService.UpdateOrderStatus(newStatus, id));
+
+    [HttpPost("{orderId}/item")]
+    public async Task<IActionResult> AddOrderItem([FromBody] OrderItemCreateDto orderItemDto, Guid orderId) =>
+        HandleResult(await orderService.AddOrderItem(orderItemDto, orderId));
 
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteOrder(Guid id) =>
