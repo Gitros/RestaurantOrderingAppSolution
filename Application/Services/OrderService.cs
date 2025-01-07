@@ -239,6 +239,142 @@ public class OrderService(RestaurantOrderingContext orderingContext, IMapper map
         }
     }
 
+
+    public async Task<ResultDto<OrderReadDto>> UpdateOrderType(OrderType newOrderType, OrderUpdateTypeDto updateTypeDto, Guid orderId)
+    {
+        try
+        {
+            var order = await orderingContext.Orders
+                .Include(o => o.OrderItems)
+                .Include(o => o.CustomerInformation)
+                .FirstOrDefaultAsync(o => o.Id == orderId);
+
+            if (order == null)
+                return ResultDto<OrderReadDto>.Failure("Order not found.", HttpStatusCode.NotFound);
+
+            if (order.OrderType == newOrderType)
+                return ResultDto<OrderReadDto>.Failure("Order type is already set to the requested type.", HttpStatusCode.BadRequest);
+
+            switch (newOrderType)
+            {
+                case OrderType.DineIn:
+                    await HandleDineInTransition(order, updateTypeDto.TableId);
+                    break;
+
+                case OrderType.Takeaway:
+                    HandleTakeawayTransition(order, updateTypeDto.PhoneNumber!, updateTypeDto.AdditionalInstructions);
+                    break;
+
+                case OrderType.Delivery:
+                    HandleDeliveryTransition(order, updateTypeDto.PhoneNumber!, updateTypeDto.AdditionalInstructions, updateTypeDto.Address!);
+                    break;
+
+                default:
+                    return ResultDto<OrderReadDto>.Failure("Invalid order type.", HttpStatusCode.BadRequest);
+            }
+
+            order.OrderType = newOrderType;
+
+            await orderingContext.SaveChangesAsync();
+
+            var updatedOrderDto = mapper.Map<OrderReadDto>(order);
+            return ResultDto<OrderReadDto>.Success(updatedOrderDto, HttpStatusCode.OK);
+        }
+        catch (Exception ex)
+        {
+            return ResultDto<OrderReadDto>.Failure($"An error occurred: {ex.Message}", HttpStatusCode.InternalServerError);
+        }
+    }
+
+    private async Task HandleDineInTransition(Order order, Guid? tableId)
+    {
+        if (tableId == null)
+            throw new ArgumentException("TableId is required for Dine-In orders.");
+
+        var table = await orderingContext.Tables.FirstOrDefaultAsync(t => t.Id == tableId);
+        if (table == null)
+            throw new ArgumentException("Specified table does not exist.");
+
+        if (table.IsOccupied)
+            throw new InvalidOperationException("Specified table is already occupied.");
+
+        table.IsOccupied = true;
+
+        if (order.CustomerInformation != null)
+        {
+            orderingContext.CustomerInformation.Remove(order.CustomerInformation);
+            order.CustomerInformation = null;
+        }
+
+        if (order.TableId.HasValue)
+            await ClearTableOccupancy(order.TableId.Value);
+
+        order.TableId = tableId;
+        orderingContext.Tables.Update(table);
+    }
+
+    private void HandleTakeawayTransition(Order order, string phoneNumber, string? additionalInstructions)
+    {
+        if (string.IsNullOrWhiteSpace(phoneNumber))
+            throw new ArgumentException("PhoneNumber is required for Takeaway orders.");
+
+        if (order.TableId.HasValue)
+            order.TableId = null;
+
+        if (order.CustomerInformation == null)
+        {
+            order.CustomerInformation = new CustomerInformation
+            {
+                PhoneNumber = phoneNumber,
+                AdditionalInstructions = additionalInstructions
+            };
+            orderingContext.CustomerInformation.Add(order.CustomerInformation);
+        }
+        else
+        {
+            order.CustomerInformation.PhoneNumber = phoneNumber;
+            order.CustomerInformation.AdditionalInstructions = additionalInstructions;
+            order.CustomerInformation.Address = null;
+            orderingContext.CustomerInformation.Update(order.CustomerInformation);
+        }
+    }
+
+    private void HandleDeliveryTransition(Order order, string phoneNumber, string? additionalInstructions, string address)
+    {
+        if (string.IsNullOrWhiteSpace(address))
+            throw new ArgumentException("Address is required for Delivery orders.");
+
+        if (order.TableId.HasValue)
+            order.TableId = null;
+
+        if (order.CustomerInformation == null)
+        {
+            order.CustomerInformation = new CustomerInformation
+            {
+                PhoneNumber = phoneNumber,
+                AdditionalInstructions = additionalInstructions,
+                Address = address
+            };
+            orderingContext.CustomerInformation.Add(order.CustomerInformation);
+        }
+        else
+        {
+            order.CustomerInformation.PhoneNumber = phoneNumber;
+            order.CustomerInformation.AdditionalInstructions = additionalInstructions;
+            order.CustomerInformation.Address = address;
+            orderingContext.CustomerInformation.Update(order.CustomerInformation);
+        }
+    }
+
+    private async Task ClearTableOccupancy(Guid tableId)
+    {
+        var table = await orderingContext.Tables.FirstOrDefaultAsync(t => t.Id == tableId);
+        if (table != null)
+        {
+            table.IsOccupied = false;
+        }
+    }
+
     public async Task<ResultDto<OrderReadDto>> AddOrderItem(OrderItemCreateDto orderItemDto, Guid orderId)
     {
         try

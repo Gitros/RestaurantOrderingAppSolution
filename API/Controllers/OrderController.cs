@@ -37,6 +37,11 @@ public class OrderController(IOrderService orderService) : BaseApiController
     public async Task<IActionResult> UpdateOrderStatus([FromBody] OrderStatus newStatus, Guid id) =>
         HandleResult(await orderService.UpdateOrderStatus(newStatus, id));
 
+    [HttpPut("{orderId}/type")]
+    public async Task<IActionResult> UpdateOrderType([FromQuery] OrderType newOrderType, [FromBody] OrderUpdateTypeDto updateTypeDto, Guid orderId) =>
+    HandleResult(await orderService.UpdateOrderType(newOrderType, updateTypeDto, orderId));
+
+
     [HttpPost("{orderId}/item")]
     public async Task<IActionResult> AddOrderItem([FromBody] OrderItemCreateDto orderItemDto, Guid orderId) =>
         HandleResult(await orderService.AddOrderItem(orderItemDto, orderId));

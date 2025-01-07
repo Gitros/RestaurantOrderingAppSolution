@@ -37,7 +37,8 @@ public class OrderMappingProfile : Profile
         CreateMap<TakeawayOrderCreateDto, CustomerInformation>()
             .ForMember(dest => dest.Id, opt => opt.MapFrom(_ => Guid.NewGuid()))
             .ForMember(dest => dest.PhoneNumber, opt => opt.MapFrom(src => src.PhoneNumber))
-            .ForMember(dest => dest.AdditionalInstructions, opt => opt.MapFrom(src => src.AdditionalInstructions));
+            .ForMember(dest => dest.AdditionalInstructions, opt => opt.MapFrom(src => src.AdditionalInstructions))
+            .ForMember(dest => dest.Address, opt => opt.Ignore());
 
         CreateMap<DeliveryOrderCreateDto, Order>()
             .ForMember(dest => dest.OrderType, opt => opt.MapFrom(_ => OrderType.Delivery))
@@ -48,6 +49,12 @@ public class OrderMappingProfile : Profile
             .ForMember(dest => dest.OrderItems, opt => opt.Ignore());
 
         CreateMap<DeliveryOrderCreateDto, CustomerInformation>()
+            .ForMember(dest => dest.Id, opt => opt.MapFrom(_ => Guid.NewGuid()))
+            .ForMember(dest => dest.PhoneNumber, opt => opt.MapFrom(src => src.PhoneNumber))
+            .ForMember(dest => dest.Address, opt => opt.MapFrom(src => src.Address))
+            .ForMember(dest => dest.AdditionalInstructions, opt => opt.MapFrom(src => src.AdditionalInstructions));
+
+        CreateMap<OrderUpdateTypeDto, CustomerInformation>()
             .ForMember(dest => dest.Id, opt => opt.MapFrom(_ => Guid.NewGuid()))
             .ForMember(dest => dest.PhoneNumber, opt => opt.MapFrom(src => src.PhoneNumber))
             .ForMember(dest => dest.Address, opt => opt.MapFrom(src => src.Address))
