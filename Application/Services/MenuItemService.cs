@@ -93,15 +93,22 @@ public class MenuItemService(RestaurantOrderingContext orderingContext, IMapper 
         }
     }
 
-    public async Task<ResultDto<List<MenuItemReadDto>>> GetMenuItemsByCategory(Guid categoryId)
+    public async Task<ResultDto<List<MenuItemReadDto>>> GetMenuItemsByCategory(Guid categoryId, Guid? tagId)
     {
         try
         {
-            var menuItems = await orderingContext.MenuItems
+            var query = orderingContext.MenuItems
                 .Where(mi => mi.MenuCategoryId == categoryId && !mi.IsDeleted)
                 .Include(mi => mi.MenuItemTags)
                     .ThenInclude(mt => mt.Tag)
-                .ToListAsync();
+                .AsQueryable();
+
+            if (tagId.HasValue)
+            {
+                query = query.Where(mi => mi.MenuItemTags.Any(mt => mt.TagId == tagId.Value));
+            }
+
+            var menuItems = await query.ToListAsync();
 
             var menuItemDtos = mapper.Map<List<MenuItemReadDto>>(menuItems);
 
