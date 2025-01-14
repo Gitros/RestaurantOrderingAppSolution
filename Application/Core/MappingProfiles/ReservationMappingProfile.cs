@@ -20,5 +20,7 @@ public class ReservationMappingProfile : Profile
         CreateMap<ReservationUpdateDto, Reservation>()
             .ForMember(dest => dest.TableId, opt => opt.MapFrom(src => src.TableId))
             .ForAllMembers(opt => opt.Condition((src, dest, srcMember) => srcMember != null));
+
+        CreateMap<Reservation, ReservationSummaryDto>();
     }
 }

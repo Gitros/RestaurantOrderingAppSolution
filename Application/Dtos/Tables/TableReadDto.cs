@@ -1,4 +1,6 @@
-﻿namespace Application.Dtos.Tables;
+﻿using Application.Dtos.Reservations;
+
+namespace Application.Dtos.Tables;
 
 public class TableReadDto
 {
@@ -7,4 +9,6 @@ public class TableReadDto
     public int NumberOfPeople { get; set; }
     public bool IsOccupied { get; set; }
     public bool IsUsed { get; set; }
+
+    public ReservationSummaryDto? Reservation { get; set; }
 }

@@ -62,8 +62,7 @@ public class TableService(RestaurantOrderingContext orderingContext, IMapper map
         try
         {
             var tables = await orderingContext.Tables
-            .Include(t => t.Orders)
-            .Where(t => t.IsUsed && !t.IsDeleted)
+            .Include(t => t.Reservations)
             .ToListAsync();
 
             var tablesDto = mapper.Map<List<TableReadDto>>(tables);
