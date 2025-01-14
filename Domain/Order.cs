@@ -2,7 +2,7 @@
 
 public class Order
 {
-    public Guid Id { get; set; } = Guid.NewGuid();
+    public Guid Id { get; set; }
     public DateTime OrderDateTime { get; set; } = DateTime.UtcNow;
     public decimal TotalAmount { get; set; } = 0;
 

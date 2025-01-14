@@ -1,5 +1,4 @@
 ﻿using Application.Dtos.MenuItems;
-using Application.Dtos.MenuItemTags;
 using AutoMapper;
 using Domain;
 
@@ -14,7 +13,7 @@ public class MenuItemMappingProfile : Profile
             .ToList()));
 
         CreateMap<MenuItem, MenuItemDetailedDto>()
-            .ForMember(dest => dest.MenuCategoryName, opt => opt.MapFrom(src => src.MenuCategory.Name));
+            .ForMember(dest => dest.MenuCategoryName, opt => opt.MapFrom(src => src.MenuCategory!.Name));
 
         CreateMap<MenuItemCreateDto, MenuItem>()
             .ForMember(dest => dest.Id, opt => opt.MapFrom(_ => Guid.NewGuid()))
