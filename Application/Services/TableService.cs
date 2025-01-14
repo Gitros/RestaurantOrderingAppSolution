@@ -6,6 +6,7 @@ using Domain;
 using Infrastructure.Database;
 using Microsoft.EntityFrameworkCore;
 using System.Net;
+using System.Text.Json;
 
 namespace Application.Services;
 
@@ -29,6 +30,21 @@ public class TableService(RestaurantOrderingContext orderingContext, IMapper map
         {
             return ResultDto<TableReadDto>
                 .Failure($"An error occurred: {ex.Message}", HttpStatusCode.InternalServerError);
+        }
+        finally 
+        {
+            var serializeDto = JsonSerializer.Serialize(tableCreateDto);
+
+            var @event = new Event
+            {
+                CorrelationId = Guid.NewGuid(),
+                DateTime = DateTime.Now,
+                Payload = JsonDocument.Parse(serializeDto),
+                EventType = nameof(TableCreateDto)
+            };
+
+            await orderingContext.Events.AddAsync(@event);
+            await orderingContext.SaveChangesAsync();
         }
     }
 
