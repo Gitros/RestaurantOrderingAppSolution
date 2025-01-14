@@ -11,4 +11,6 @@ public class Table
     public bool IsDeleted { get; set; } = false;
 
     public List<Order> Orders { get; set; } = new List<Order>();
+
+    public List<Reservation> Reservations { get; set; } = new List<Reservation>();
 }

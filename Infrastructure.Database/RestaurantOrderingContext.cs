@@ -19,6 +19,7 @@ public class RestaurantOrderingContext : DbContext
     public DbSet<Ingredient> Ingredients { get; set; }
     public DbSet<OrderItemIngredient> OrderItemIngredients { get; set; }
     public DbSet<CustomerInformation> CustomerInformation { get; set; }
+    public DbSet<Reservation> Reservations { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -61,6 +62,13 @@ public class RestaurantOrderingContext : DbContext
             .HasMany(t => t.Orders)
             .WithOne(o => o.Table)
             .HasForeignKey(o => o.TableId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        // Table and Reservation relationship
+        modelBuilder.Entity<Reservation>()
+            .HasOne(r => r.Table)
+            .WithMany(t => t.Reservations)
+            .HasForeignKey(r => r.TableId)
             .OnDelete(DeleteBehavior.Restrict);
 
         // MenuItem and Tag (Many-to-Many)
