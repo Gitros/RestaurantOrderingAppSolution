@@ -19,6 +19,7 @@ public static class ApplicationServiceExtensions
         services.AddScoped<IIngredientService, IngredientService>();
         services.AddScoped<ITagService, TagService>();
         services.AddScoped<ICustomerInformationService, CustomerInformationService>();
+        services.AddScoped<IReservationService, ReservationService>();
 
         // FluentValidation
         services.AddFluentValidationAutoValidation();
