@@ -9,7 +9,7 @@ public class OrderItem
 
     public List<OrderItemIngredient> OrderItemIngredients { get; set; } = new List<OrderItemIngredient>();
 
-    public OrderItemStatus OrderItemStatus { get; set; } = OrderItemStatus.Pending;
+    public OrderItemPaymentStatus OrderItemPaymentStatus { get; set; } = OrderItemPaymentStatus.Pending;
 
     public Guid OrderId { get; set; }
     public Order Order { get; set; } = null!;
@@ -18,11 +18,10 @@ public class OrderItem
     public MenuItem MenuItem { get; set; } = null!;
 }
 
-public enum OrderItemStatus
+public enum OrderItemPaymentStatus
 {
     Pending,
-    InProgress,
-    ReadyToServe,
-    Served,
-    Cancelled,
+    Paid,
+    DefferedPayment,
+    Cancelled
 }

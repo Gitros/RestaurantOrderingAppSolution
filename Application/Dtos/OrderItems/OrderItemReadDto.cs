@@ -15,5 +15,5 @@ public class OrderItemReadDto
     public Guid MenuItemId { get; set; }
 
     public string? MenuItemName { get; set; }
-    public string? OrderItemStatus { get; set; }
+    public string? OrderItemPaymentStatus { get; set; }
 }

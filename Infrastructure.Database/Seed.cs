@@ -66,7 +66,7 @@ public class Seed
                 {
                     Id = Guid.NewGuid(),
                     OrderDateTime = DateTime.UtcNow,
-                    OrderStatus = OrderStatus.Pending,
+                    OrderStatus = OrderStatus.Ongoing,
                     OrderType = OrderType.DineIn,
                     PaymentMethod = PaymentMethod.Card,
                     TableId = tables[0].Id,
@@ -82,7 +82,7 @@ public class Seed
                 {
                     Id = Guid.NewGuid(),
                     OrderDateTime = DateTime.UtcNow.AddHours(-2),
-                    OrderStatus = OrderStatus.Pending,
+                    OrderStatus = OrderStatus.Ongoing,
                     OrderType = OrderType.Delivery,
                     PaymentMethod = PaymentMethod.Cash,
                     CustomerInformation = new CustomerInformation
@@ -107,7 +107,7 @@ public class Seed
                     Quantity = 2,
                     Price = 5.00M * 2,
                     SpecialInstructions = "Extra cheese",
-                    OrderItemStatus = OrderItemStatus.Pending
+                    OrderItemPaymentStatus = OrderItemPaymentStatus.Pending
                 },
                 new OrderItem
                 {
@@ -117,7 +117,7 @@ public class Seed
                     Quantity = 1,
                     Price = 15.00M,
                     SpecialInstructions = "Add extra pepperoni",
-                    OrderItemStatus = OrderItemStatus.Pending
+                    OrderItemPaymentStatus = OrderItemPaymentStatus.Pending
                 }
             };
             await context.OrderItems.AddRangeAsync(orderItems);

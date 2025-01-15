@@ -12,16 +12,16 @@ public class OrderItemMappingProfile : Profile
         CreateMap<OrderItem, OrderItemReadDto>()
             .ForMember(dest => dest.MenuItemName, opt => opt.MapFrom(src => src.MenuItem.Name))
             .ForMember(dest => dest.Ingredients, opt => opt.MapFrom(src => src.OrderItemIngredients))
-            .ForMember(dest => dest.OrderItemStatus, opt => opt.MapFrom(src => MapOrderItemStatus(src.OrderItemStatus)));
+            .ForMember(dest => dest.OrderItemPaymentStatus, opt => opt.MapFrom(src => MapOrderItemStatus(src.OrderItemPaymentStatus)));
 
         CreateMap<OrderItem, OrderItemSummaryDto>()
             .ForMember(dest => dest.MenuItemName, opt => opt.MapFrom(src => src.MenuItem.Name))
             .ForMember(dest => dest.Ingredients, opt => opt.MapFrom(src => src.OrderItemIngredients))
-            .ForMember(dest => dest.OrderItemStatus, opt => opt.MapFrom(src => MapOrderItemStatus(src.OrderItemStatus)));
+            .ForMember(dest => dest.OrderItemPaymentStatus, opt => opt.MapFrom(src => MapOrderItemStatus(src.OrderItemPaymentStatus)));
 
         CreateMap<OrderItemCreateDto, OrderItem>()
             .ForMember(dest => dest.Id, opt => opt.MapFrom(_ => Guid.NewGuid()))
-            .ForMember(dest => dest.OrderItemStatus, opt => opt.MapFrom(_ => OrderItemStatus.Pending))
+            .ForMember(dest => dest.OrderItemPaymentStatus, opt => opt.MapFrom(_ => OrderItemPaymentStatus.Pending))
             .ForMember(dest => dest.OrderId, opt => opt.Ignore())
             .ForMember(dest => dest.Price, opt => opt.Ignore())
             .ForMember(dest => dest.MenuItemId, opt => opt.MapFrom(src => src.MenuItemId));
@@ -35,15 +35,14 @@ public class OrderItemMappingProfile : Profile
         CreateMap<OrderItemIngredientAddDto, OrderItemIngredient>();
     }
 
-    private string MapOrderItemStatus(OrderItemStatus status)
+    private string MapOrderItemStatus(OrderItemPaymentStatus status)
     {
         return status switch
         {
-            OrderItemStatus.Pending => "Pending",
-            OrderItemStatus.InProgress => "In Progress",
-            OrderItemStatus.ReadyToServe => "Ready to Serve",
-            OrderItemStatus.Served => "Served",
-            OrderItemStatus.Cancelled => "Cancelled",
+            OrderItemPaymentStatus.Pending => "Pending",
+            OrderItemPaymentStatus.Paid => "Paid",
+            OrderItemPaymentStatus.DefferedPayment => "Payment deffered",
+            OrderItemPaymentStatus.Cancelled => "Cancelled",
             _ => "Unknown"
         };
     }

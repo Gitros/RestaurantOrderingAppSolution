@@ -23,14 +23,14 @@ public class OrderMappingProfile : Profile
             .ForMember(dest => dest.OrderType, opt => opt.MapFrom(_ => OrderType.DineIn))
             .ForMember(dest => dest.Id, opt => opt.MapFrom(_ => Guid.NewGuid()))
             .ForMember(dest => dest.TotalAmount, opt => opt.MapFrom(_ => 0))
-            .ForMember(dest => dest.OrderStatus, opt => opt.MapFrom(_ => OrderStatus.Pending))
+            .ForMember(dest => dest.OrderStatus, opt => opt.MapFrom(_ => OrderStatus.Ongoing))
             .ForMember(dest => dest.OrderItems, opt => opt.Ignore());
 
         CreateMap<TakeawayOrderCreateDto, Order>()
             .ForMember(dest => dest.OrderType, opt => opt.MapFrom(_ => OrderType.Takeaway))
             .ForMember(dest => dest.Id, opt => opt.MapFrom(_ => Guid.NewGuid()))
             .ForMember(dest => dest.TotalAmount, opt => opt.MapFrom(_ => 0))
-            .ForMember(dest => dest.OrderStatus, opt => opt.MapFrom(_ => OrderStatus.Pending))
+            .ForMember(dest => dest.OrderStatus, opt => opt.MapFrom(_ => OrderStatus.Ongoing))
             .ForMember(dest => dest.CustomerInformation, opt => opt.Ignore())
             .ForMember(dest => dest.OrderItems, opt => opt.Ignore());
 
@@ -44,7 +44,7 @@ public class OrderMappingProfile : Profile
             .ForMember(dest => dest.OrderType, opt => opt.MapFrom(_ => OrderType.Delivery))
             .ForMember(dest => dest.Id, opt => opt.MapFrom(_ => Guid.NewGuid()))
             .ForMember(dest => dest.TotalAmount, opt => opt.MapFrom(_ => 0))
-            .ForMember(dest => dest.OrderStatus, opt => opt.MapFrom(_ => OrderStatus.Pending))
+            .ForMember(dest => dest.OrderStatus, opt => opt.MapFrom(_ => OrderStatus.Ongoing))
             .ForMember(dest => dest.CustomerInformation, opt => opt.Ignore())
             .ForMember(dest => dest.OrderItems, opt => opt.Ignore());
 

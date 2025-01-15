@@ -22,10 +22,6 @@ public class OrderItemController(IOrderItemService orderItemService) : BaseApiCo
     public async Task<IActionResult> UpdateOrderItem([FromBody] OrderItemUpdateDto updateDto, Guid orderItemId, Guid orderId) =>
         HandleResult(await orderItemService.UpdateOrderItem(updateDto, orderItemId, orderId));
 
-    [HttpPut("{orderId}/items/{orderItemId}/status")]
-    public async Task<IActionResult> UpdateOrderItemStatus([FromBody] OrderItemStatusDto statusDto, Guid orderId, Guid orderItemId) =>
-    HandleResult(await orderItemService.UpdateOrderItemStatus(statusDto, orderId, orderItemId));
-
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteOrderItem(Guid id) =>
         HandleResult(await orderItemService.DeleteOrderItem(id));

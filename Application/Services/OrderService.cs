@@ -363,7 +363,9 @@ public class OrderService(RestaurantOrderingContext orderingContext, IMapper map
 
     private async Task<List<OrderItem>> PopulateOrderItemsAsync(IEnumerable<OrderItemCreateDto> orderItemDtos, Guid orderId)
     {
-        var menuItemIds = orderItemDtos.Select(oi => oi.MenuItemId).Distinct();
+        var menuItemIds = orderItemDtos
+            .Select(oi => oi.MenuItemId)
+            .Distinct();
         var menuItems = await orderingContext.MenuItems
             .Where(mi => menuItemIds.Contains(mi.Id))
             .ToDictionaryAsync(mi => mi.Id);

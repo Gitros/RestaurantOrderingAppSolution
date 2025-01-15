@@ -9,7 +9,7 @@ public class OrderItemSummaryDto
     public int Quantity { get; set; }
     public string? SpecialInstructions { get; set; }
     public string MenuItemName { get; set; } = null!;
-    public string OrderItemStatus { get; set; } = null!;
+    public string OrderItemPaymentStatus { get; set; } = null!;
 
     public List<OrderItemIngredientReadDto> Ingredients { get; set; } = new List<OrderItemIngredientReadDto>();
 }

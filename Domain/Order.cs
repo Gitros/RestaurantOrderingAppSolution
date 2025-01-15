@@ -6,7 +6,9 @@ public class Order
     public DateTime OrderDateTime { get; set; } = DateTime.UtcNow;
     public decimal TotalAmount { get; set; } = 0;
 
-    public OrderStatus OrderStatus { get; set; } = OrderStatus.Pending;
+    public OrderStatus OrderStatus { get; set; } = OrderStatus.Ongoing;
+    public PaymentStatus PaymentStatus { get; set; } = PaymentStatus.Pending;
+
     public required OrderType OrderType { get; set; }
 
     public PaymentMethod? PaymentMethod { get; set; }
@@ -22,11 +24,16 @@ public class Order
 
 public enum OrderStatus
 {
+    Ongoing,
+    Finished,
+    Cancelled
+}
+
+public enum PaymentStatus
+{
     Pending,
-    InProgress,
-    Cooked,
-    Delivered,
     Paid,
+    DefferedPayment,
     Cancelled
 }
 

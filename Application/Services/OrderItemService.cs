@@ -159,39 +159,6 @@ public class OrderItemService(RestaurantOrderingContext orderingContext, IMapper
         }
     }
 
-    public async Task<ResultDto<OrderItemReadDto>> UpdateOrderItemStatus(OrderItemStatusDto statusDto, Guid orderId, Guid orderItemId)
-    {
-        try
-        {
-            var orderItem = await orderingContext.OrderItems
-                .FirstOrDefaultAsync(oi => oi.Id == orderItemId && oi.OrderId == orderId);
-
-            if (orderItem == null)
-                return ResultDto<OrderItemReadDto>
-                    .Failure("Order item not found.", HttpStatusCode.NotFound);
-
-            if (!Enum.IsDefined(typeof(OrderItemStatus), statusDto.OrderItemStatus))
-            {
-                return ResultDto<OrderItemReadDto>
-                    .Failure("Invalid order item status provided.", HttpStatusCode.BadRequest);
-            }
-
-            orderItem.OrderItemStatus = (OrderItemStatus)statusDto.OrderItemStatus;
-
-            await orderingContext.SaveChangesAsync();
-
-            var updatedOrderItemDto = mapper.Map<OrderItemReadDto>(orderItem);
-
-            return ResultDto<OrderItemReadDto>
-                .Success(updatedOrderItemDto, HttpStatusCode.OK);
-        }
-        catch (Exception ex)
-        {
-            return ResultDto<OrderItemReadDto>
-                .Failure($"An error occurred: {ex.Message}", HttpStatusCode.InternalServerError);
-        }
-    }
-
     public async Task<ResultDto<bool>> DeleteOrderItem(Guid id)
     {
         try
