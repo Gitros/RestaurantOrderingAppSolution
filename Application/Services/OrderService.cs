@@ -368,6 +368,13 @@ public class OrderService(RestaurantOrderingContext orderingContext, IMapper map
             .Where(mi => menuItemIds.Contains(mi.Id))
             .ToDictionaryAsync(mi => mi.Id);
 
+        var ingredientIds = orderItemDtos
+            .SelectMany(oi => oi.Ingredients.Select(i => i.IngredientId))
+            .Distinct();
+        var ingredients = await orderingContext.Ingredients
+            .Where(ing => ingredientIds.Contains(ing.Id))
+            .ToDictionaryAsync(ing => ing.Id);
+
         var orderItems = new List<OrderItem>();
         foreach (var itemDto in orderItemDtos)
         {
@@ -379,6 +386,24 @@ public class OrderService(RestaurantOrderingContext orderingContext, IMapper map
             var orderItem = mapper.Map<OrderItem>(itemDto);
             orderItem.Price = menuItem.Price;
             orderItem.OrderId = orderId;
+
+            foreach (var ingredientDto in itemDto.Ingredients)
+            {
+                if (!ingredients.TryGetValue(ingredientDto.IngredientId, out var ingredient))
+                {
+                    throw new KeyNotFoundException($"Ingredient with ID {ingredientDto.IngredientId} not found.");
+                }
+
+                var orderItemIngredient = new OrderItemIngredient
+                {
+                    IngredientId = ingredient.Id,
+                    Quantity = ingredientDto.Quantity,
+                    OrderItemId = orderItem.Id
+                };
+
+                orderItem.OrderItemIngredients.Add(orderItemIngredient);
+                orderItem.Price += ingredient.Price * ingredientDto.Quantity;
+            }
 
             orderItems.Add(orderItem);
         }
