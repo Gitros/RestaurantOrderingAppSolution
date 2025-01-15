@@ -184,20 +184,32 @@ public class OrderService(RestaurantOrderingContext orderingContext, IMapper map
         }
     }
 
-    public async Task<ResultDto<List<OrderReadDto>>> GetAllOrders()
+    public async Task<ResultDto<List<OrderReadDto>>> GetAllOrders(OrderStatus? orderStatus, PaymentStatus? paymentStatus)
     {
         try
         {
-            var orders = await orderingContext.Orders
+            var query = orderingContext.Orders
                 .Include(o => o.OrderItems)
                     .ThenInclude(oi => oi.MenuItem)
                 .Include(o => o.CustomerInformation)
-                .ToListAsync();
+                .AsQueryable();
 
-            var ordersDto = mapper.Map<List<OrderReadDto>>(orders);
+            if (orderStatus.HasValue)
+            {
+                query = query.Where(o => o.OrderStatus == orderStatus.Value);
+            }
+
+            if (paymentStatus.HasValue)
+            {
+                query = query.Where(o => o.PaymentStatus == paymentStatus.Value);
+            }
+
+            var orders = await query.ToListAsync();
+
+            var orderDtos = mapper.Map<List<OrderReadDto>>(orders);
 
             return ResultDto<List<OrderReadDto>>
-                .Success(ordersDto, HttpStatusCode.OK);
+                .Success(orderDtos, HttpStatusCode.OK);
         }
         catch (Exception ex)
         {

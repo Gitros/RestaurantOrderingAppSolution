@@ -30,8 +30,8 @@ public class OrderController(IOrderService orderService) : BaseApiController
         HandleResult(await orderService.GetOrder(id));
 
     [HttpGet]
-    public async Task<IActionResult> GetAllOrders() =>
-        HandleResult(await orderService.GetAllOrders());
+    public async Task<IActionResult> GetAllOrders([FromQuery] OrderStatus? orderStatus, [FromQuery] PaymentStatus? paymentStatus) =>
+        HandleResult(await orderService.GetAllOrders(orderStatus, paymentStatus));
 
     [HttpPut("{orderId}/change-table")]
     public async Task<IActionResult> ChangeOrderTable(Guid orderId, [FromBody] Guid newTableId) =>

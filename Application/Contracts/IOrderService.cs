@@ -13,7 +13,7 @@ public interface IOrderService
     Task<ResultDto<OrderReadDto>> CreateDeliveryOrder(DeliveryOrderCreateDto deliveryOrderDto);
     Task<ResultDto<OrderReadDto>> AddOrderItem(OrderItemCreateDto orderItemDto, Guid orderId);
     Task<ResultDto<OrderReadDto>> GetOrder(Guid id);
-    Task<ResultDto<List<OrderReadDto>>> GetAllOrders();
+    Task<ResultDto<List<OrderReadDto>>> GetAllOrders(OrderStatus? orderStatus, PaymentStatus? paymentStatus);
     Task<ResultDto<OrderReadDto>> ChangeOrderTable(Guid orderId, Guid newTableId);
     Task<ResultDto<OrderReadDto>> UpdateOrderStatus(OrderStatus newStatus, Guid id);
     Task<ResultDto<OrderReadDto>> UpdateOrderType(OrderType newOrderType, OrderUpdateTypeDto updateTypeDto, Guid orderId);
