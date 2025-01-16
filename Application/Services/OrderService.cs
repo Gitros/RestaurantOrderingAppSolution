@@ -155,6 +155,39 @@ public class OrderService(RestaurantOrderingContext orderingContext, IMapper map
         }
     }
 
+    public async Task<ResultDto<OrderReadDto>> PayOrder(PaymentMethod paymentMethod, Guid orderId)
+    {
+        try
+        {
+            var order = await orderingContext.Orders
+                .Include(o => o.OrderItems)
+                .FirstOrDefaultAsync(o => o.Id == orderId);
+
+            if (order == null)
+                return ResultDto<OrderReadDto>.Failure("Order not found.", HttpStatusCode.NotFound);
+
+            if (order.PaymentStatus == PaymentStatus.Paid)
+                return ResultDto<OrderReadDto>.Failure("Order is already fully paid.", HttpStatusCode.BadRequest);
+
+            foreach (var item in order.OrderItems)
+            {
+                if (item.OrderItemPaymentStatus == OrderItemPaymentStatus.Pending)
+                    item.OrderItemPaymentStatus = OrderItemPaymentStatus.Paid;
+            }
+
+            order.PaymentStatus = PaymentStatus.Paid;
+            await orderingContext.SaveChangesAsync();
+
+            var updatedOrder = mapper.Map<OrderReadDto>(order);
+            return ResultDto<OrderReadDto>.Success(updatedOrder, HttpStatusCode.OK);
+        }
+        catch (Exception ex)
+        {
+            return ResultDto<OrderReadDto>.Failure($"An error occurred: {ex.Message}", HttpStatusCode.InternalServerError);
+        }
+    }
+
+
     public async Task<ResultDto<OrderReadDto>> GetOrder(Guid id)
     {
         try

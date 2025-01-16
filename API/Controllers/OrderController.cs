@@ -25,6 +25,10 @@ public class OrderController(IOrderService orderService) : BaseApiController
     public async Task<IActionResult> AddOrderItem([FromBody] OrderItemCreateDto orderItemDto, Guid orderId) =>
         HandleResult(await orderService.AddOrderItem(orderItemDto, orderId));
 
+    [HttpPost("{orderId}/pay")]
+    public async Task<IActionResult> PayOrder([FromQuery] PaymentMethod paymentMethod, Guid orderId) =>
+    HandleResult(await orderService.PayOrder(paymentMethod, orderId));
+
     [HttpGet("{id}")]
     public async Task<IActionResult> GetOrder(Guid id) =>
         HandleResult(await orderService.GetOrder(id));
