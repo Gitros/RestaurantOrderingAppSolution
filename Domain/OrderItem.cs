@@ -9,19 +9,9 @@ public class OrderItem
 
     public List<OrderItemIngredient> OrderItemIngredients { get; set; } = new List<OrderItemIngredient>();
 
-    public OrderItemPaymentStatus OrderItemPaymentStatus { get; set; } = OrderItemPaymentStatus.Pending;
-
     public Guid OrderId { get; set; }
     public Order Order { get; set; } = null!;
 
     public Guid MenuItemId { get; set; }
     public MenuItem MenuItem { get; set; } = null!;
-}
-
-public enum OrderItemPaymentStatus
-{
-    Pending,
-    Paid,
-    DefferedPayment,
-    Cancelled
 }

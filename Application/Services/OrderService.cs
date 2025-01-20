@@ -169,12 +169,6 @@ public class OrderService(RestaurantOrderingContext orderingContext, IMapper map
             if (order.PaymentStatus == PaymentStatus.Paid)
                 return ResultDto<OrderReadDto>.Failure("Order is already fully paid.", HttpStatusCode.BadRequest);
 
-            foreach (var item in order.OrderItems)
-            {
-                if (item.OrderItemPaymentStatus == OrderItemPaymentStatus.Pending)
-                    item.OrderItemPaymentStatus = OrderItemPaymentStatus.Paid;
-            }
-
             order.PaymentStatus = PaymentStatus.Paid;
             await orderingContext.SaveChangesAsync();
 

@@ -106,8 +106,7 @@ public class Seed
                     OrderId = orders[0].Id,
                     Quantity = 2,
                     Price = 5.00M * 2,
-                    SpecialInstructions = "Extra cheese",
-                    OrderItemPaymentStatus = OrderItemPaymentStatus.Pending
+                    SpecialInstructions = "Extra cheese"
                 },
                 new OrderItem
                 {
@@ -116,8 +115,7 @@ public class Seed
                     OrderId = orders[1].Id,
                     Quantity = 1,
                     Price = 15.00M,
-                    SpecialInstructions = "Add extra pepperoni",
-                    OrderItemPaymentStatus = OrderItemPaymentStatus.Pending
+                    SpecialInstructions = "Add extra pepperoni"
                 }
             };
             await context.OrderItems.AddRangeAsync(orderItems);
