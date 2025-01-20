@@ -6,6 +6,8 @@ public class Order
     public DateTime OrderDateTime { get; set; } = DateTime.UtcNow;
     public decimal TotalAmount { get; set; } = 0;
 
+    public decimal Discount { get; set; } = 0;
+
     public OrderStatus OrderStatus { get; set; } = OrderStatus.Ongoing;
     public PaymentStatus PaymentStatus { get; set; } = PaymentStatus.Pending;
 

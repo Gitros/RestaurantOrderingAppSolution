@@ -9,6 +9,8 @@ public class OrderItem
 
     public List<OrderItemIngredient> OrderItemIngredients { get; set; } = new List<OrderItemIngredient>();
 
+    public decimal Discount { get; set; } = 0;
+
     public Guid OrderId { get; set; }
     public Order Order { get; set; } = null!;
 

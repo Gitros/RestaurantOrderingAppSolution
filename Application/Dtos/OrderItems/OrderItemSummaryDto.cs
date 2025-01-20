@@ -8,6 +8,7 @@ public class OrderItemSummaryDto
     public decimal Price { get; set; }
     public int Quantity { get; set; }
     public string? SpecialInstructions { get; set; }
+    public decimal Discount { get; set; }
     public string MenuItemName { get; set; } = null!;
 
     public List<OrderItemIngredientReadDto> Ingredients { get; set; } = new List<OrderItemIngredientReadDto>();

@@ -11,7 +11,7 @@ public class OrderController(IOrderService orderService) : BaseApiController
 {
     [HttpPost("dinein")]
     public async Task<IActionResult> CreateDineInOrder([FromBody] DineInOrderCreateDto dineInOrderDto) =>
-    HandleResult(await orderService.CreateDineInOrder(dineInOrderDto));
+        HandleResult(await orderService.CreateDineInOrder(dineInOrderDto));
 
     [HttpPost("takeaway")]
     public async Task<IActionResult> CreateTakeawayOrder([FromBody] TakeawayOrderCreateDto takeawayOrderDto) =>
@@ -41,6 +41,14 @@ public class OrderController(IOrderService orderService) : BaseApiController
     public async Task<IActionResult> GetAllOrders([FromQuery] OrderStatus? orderStatus, [FromQuery] PaymentStatus? paymentStatus) =>
         HandleResult(await orderService.GetAllOrders(orderStatus, paymentStatus));
 
+    [HttpPut("{orderId}/apply-discount")]
+    public async Task<IActionResult> ApplyOrderDiscount(decimal discount, Guid orderId) =>
+        HandleResult(await orderService.ApplyOrderDiscount(discount, orderId));
+
+    [HttpPut("{orderId}/order-items/{orderItemId}/apply-discount")]
+    public async Task<IActionResult> ApplyOrderItemDiscount(decimal discount, Guid orderId, Guid orderItemId) =>
+        HandleResult(await orderService.ApplyOrderItemDiscount(discount, orderId, orderItemId));
+
     [HttpPut("{orderId}/change-table")]
     public async Task<IActionResult> ChangeOrderTable(Guid orderId, [FromBody] Guid newTableId) =>
         HandleResult(await orderService.ChangeOrderTable(orderId, newTableId));
@@ -51,7 +59,7 @@ public class OrderController(IOrderService orderService) : BaseApiController
 
     [HttpPut("{orderId}/type")]
     public async Task<IActionResult> UpdateOrderType([FromQuery] OrderType newOrderType, [FromBody] OrderUpdateTypeDto updateTypeDto, Guid orderId) =>
-    HandleResult(await orderService.UpdateOrderType(newOrderType, updateTypeDto, orderId));
+        HandleResult(await orderService.UpdateOrderType(newOrderType, updateTypeDto, orderId));
 
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteOrder(Guid id) =>
