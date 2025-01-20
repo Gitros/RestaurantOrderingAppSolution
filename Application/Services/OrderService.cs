@@ -181,6 +181,80 @@ public class OrderService(RestaurantOrderingContext orderingContext, IMapper map
         }
     }
 
+    public async Task<ResultDto<OrderReadDto>> SplitBill(SplitBillDto splitBillDto, Guid orderId)
+    {
+        try
+        {
+            var originalOrder = await orderingContext.Orders
+                .Include(o => o.OrderItems)
+                    .ThenInclude(oi => oi.MenuItem)
+                .Include(o => o.OrderItems)
+                    .ThenInclude(oi => oi.OrderItemIngredients)
+                        .ThenInclude(oii => oii.Ingredient)
+                .FirstOrDefaultAsync(o => o.Id == orderId);
+
+            if (originalOrder == null)
+                return ResultDto<OrderReadDto>.Failure("Order not found.", HttpStatusCode.NotFound);
+
+            if (originalOrder.PaymentStatus == PaymentStatus.Paid || originalOrder.PaymentStatus == PaymentStatus.Cancelled)
+                return ResultDto<OrderReadDto>.Failure("Cannot split a fully paid or canceled order.", HttpStatusCode.BadRequest);
+
+            var itemsToSplit = originalOrder.OrderItems
+                .Where(oi => splitBillDto.OrderItemIds.Contains(oi.Id))
+                .ToList();
+
+            if (!itemsToSplit.Any())
+                return ResultDto<OrderReadDto>.Failure("No valid items selected for splitting.", HttpStatusCode.BadRequest);
+
+            var newOrder = new Order
+            {
+                Id = Guid.NewGuid(),
+                OrderDateTime = DateTime.UtcNow,
+                OrderStatus = originalOrder.OrderStatus,
+                PaymentStatus = PaymentStatus.Pending,
+                TableId = originalOrder.TableId,
+                OrderType = originalOrder.OrderType,
+                OrderItems = new List<OrderItem>()
+            };
+
+            foreach (var item in itemsToSplit)
+            {
+                var newItem = new OrderItem
+                {
+                    Id = Guid.NewGuid(),
+                    MenuItemId = item.MenuItemId,
+                    Price = item.Price,
+                    Quantity = item.Quantity,
+                    SpecialInstructions = item.SpecialInstructions,
+                    OrderItemIngredients = item.OrderItemIngredients.Select(ingredient => new OrderItemIngredient
+                    {
+                        IngredientId = ingredient.IngredientId,
+                        Quantity = ingredient.Quantity
+                    }).ToList()
+                };
+
+                newOrder.OrderItems.Add(newItem);
+
+                originalOrder.OrderItems.Remove(item);
+            }
+
+            originalOrder.TotalAmount = originalOrder.OrderItems.Sum(item => item.Price * item.Quantity);
+
+            newOrder.TotalAmount = newOrder.OrderItems.Sum(item => item.Price * item.Quantity);
+
+            await orderingContext.Orders.AddAsync(newOrder);
+            await orderingContext.SaveChangesAsync();
+
+            var newOrderDto = mapper.Map<OrderReadDto>(newOrder);
+            return ResultDto<OrderReadDto>.Success(newOrderDto, HttpStatusCode.Created);
+        }
+        catch (Exception ex)
+        {
+            return ResultDto<OrderReadDto>.Failure($"An error occurred: {ex.Message}", HttpStatusCode.InternalServerError);
+        }
+    }
+
+
 
     public async Task<ResultDto<OrderReadDto>> GetOrder(Guid id)
     {
@@ -540,5 +614,4 @@ public class OrderService(RestaurantOrderingContext orderingContext, IMapper map
             table.IsOccupied = false;
         }
     }
-
 }
