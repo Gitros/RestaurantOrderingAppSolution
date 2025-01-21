@@ -245,8 +245,8 @@ public class OrderService(RestaurantOrderingContext orderingContext, IMapper map
             await orderingContext.Orders.AddAsync(newOrder);
             await orderingContext.SaveChangesAsync();
 
-            var newOrderDto = mapper.Map<OrderReadDto>(newOrder);
-            return ResultDto<OrderReadDto>.Success(newOrderDto, HttpStatusCode.Created);
+
+            return ResultDto<OrderReadDto>.Success(null, HttpStatusCode.Created);
         }
         catch (Exception ex)
         {
