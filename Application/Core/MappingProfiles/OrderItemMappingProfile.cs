@@ -15,7 +15,13 @@ public class OrderItemMappingProfile : Profile
 
         CreateMap<OrderItem, OrderItemSummaryDto>()
             .ForMember(dest => dest.MenuItemName, opt => opt.MapFrom(src => src.MenuItem.Name))
-            .ForMember(dest => dest.Ingredients, opt => opt.MapFrom(src => src.OrderItemIngredients));
+            .ForMember(dest => dest.Ingredients, opt => opt.MapFrom(src => src.OrderItemIngredients.Select(ingredient => new OrderItemIngredientReadDto
+            {
+                IngredientId = ingredient.IngredientId,
+                IngredientName = ingredient.Ingredient.Name,
+                Quantity = ingredient.Quantity,
+                Price = ingredient.Ingredient.Price
+            }).ToList()));
 
         CreateMap<OrderItemCreateDto, OrderItem>()
             .ForMember(dest => dest.Id, opt => opt.MapFrom(_ => Guid.NewGuid()))
