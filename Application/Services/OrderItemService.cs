@@ -2,6 +2,7 @@
 using Application.Dtos.Common;
 using Application.Dtos.OrderItemIngredients;
 using Application.Dtos.OrderItems;
+using Application.Dtos.Orders;
 using AutoMapper;
 using Domain;
 using Infrastructure.Database;
@@ -12,35 +13,111 @@ namespace Application.Services;
 
 public class OrderItemService(RestaurantOrderingContext orderingContext, IMapper mapper) : IOrderItemService
 {
-    public async Task<ResultDto<OrderItemReadDto>> CreateOrderItem(OrderItemCreateDto orderItemCreateDto, Guid orderId)
+    public async Task<ResultDto<OrderReadDto>> AddOrderItem(OrderItemCreateDto orderItemDto, Guid orderId)
     {
         try
         {
             var order = await orderingContext.Orders
-                    .Include(o => o.OrderItems)
-                    .FirstOrDefaultAsync(o => o.Id == orderId);
+                .Include(o => o.OrderItems)
+                .FirstOrDefaultAsync(o => o.Id == orderId);
 
             if (order == null)
-                return ResultDto<OrderItemReadDto>
+                return ResultDto<OrderReadDto>
                     .Failure("Order not found.", HttpStatusCode.NotFound);
 
-            var orderItem = mapper.Map<OrderItem>(orderItemCreateDto);
-            orderItem.OrderId = orderId;
+            var menuItem = await orderingContext.MenuItems
+                .FirstOrDefaultAsync(mi => mi.Id == orderItemDto.MenuItemId);
 
-            await orderingContext.OrderItems.AddAsync(orderItem);
+            if (menuItem == null)
+                return ResultDto<OrderReadDto>
+                    .Failure($"MenuItem with ID {orderItemDto.MenuItemId} not found.", HttpStatusCode.BadRequest);
+
+            var existingItem = order.OrderItems.FirstOrDefault(oi => oi.MenuItemId == orderItemDto.MenuItemId);
+            if (existingItem != null)
+            {
+                existingItem.Quantity += orderItemDto.Quantity;
+                order.TotalAmount += menuItem.Price * orderItemDto.Quantity;
+            }
+            else
+            {
+                var orderItem = mapper.Map<OrderItem>(orderItemDto);
+                orderItem.Price = menuItem.Price;
+                orderItem.OrderId = orderId;
+
+                await orderingContext.OrderItems.AddAsync(orderItem);
+                order.TotalAmount += orderItem.Price * orderItem.Quantity;
+            }
+
             await orderingContext.SaveChangesAsync();
 
-            var createdOrderItem = mapper.Map<OrderItemReadDto>(orderItem);
-
-            return ResultDto<OrderItemReadDto>
-                .Success(createdOrderItem, HttpStatusCode.Created);
+            var updatedOrderDto = mapper.Map<OrderReadDto>(order);
+            return ResultDto<OrderReadDto>
+                .Success(updatedOrderDto, HttpStatusCode.OK);
         }
         catch (Exception ex)
         {
-            return ResultDto<OrderItemReadDto>
+            return ResultDto<OrderReadDto>
                 .Failure($"An error occurred: {ex.Message}", HttpStatusCode.InternalServerError);
         }
     }
+
+    public async Task<ResultDto<OrderReadDto>> AddOrderItems(IEnumerable<OrderItemCreateDto> orderItemDtos, Guid orderId)
+    {
+        try
+        {
+            var order = await orderingContext.Orders
+                .Include(o => o.OrderItems)
+                .FirstOrDefaultAsync(o => o.Id == orderId);
+
+            if (order == null)
+                return ResultDto<OrderReadDto>
+                    .Failure("Order not found.", HttpStatusCode.NotFound);
+
+            var menuItemIds = orderItemDtos
+                .Select(dto => dto.MenuItemId)
+                .Distinct();
+
+            var menuItems = await orderingContext.MenuItems
+                .Where(mi => menuItemIds.Contains(mi.Id))
+                .ToDictionaryAsync(mi => mi.Id);
+
+            foreach (var dto in orderItemDtos)
+            {
+                if (!menuItems.TryGetValue(dto.MenuItemId, out var menuItem))
+                    return ResultDto<OrderReadDto>
+                        .Failure($"MenuItem with ID {dto.MenuItemId} not found.", HttpStatusCode.BadRequest);
+
+                var existingItem = order.OrderItems
+                    .FirstOrDefault(oi => oi.MenuItemId == dto.MenuItemId);
+                if (existingItem != null)
+                {
+                    existingItem.Quantity += dto.Quantity;
+                    order.TotalAmount += menuItem.Price * dto.Quantity;
+                }
+                else
+                {
+                    var orderItem = mapper.Map<OrderItem>(dto);
+                    orderItem.Price = menuItem.Price;
+                    orderItem.OrderId = orderId;
+
+                    await orderingContext.OrderItems.AddAsync(orderItem);
+                    order.TotalAmount += orderItem.Price * orderItem.Quantity;
+                }
+            }
+
+            await orderingContext.SaveChangesAsync();
+
+            var updatedOrderDto = mapper.Map<OrderReadDto>(order);
+            return ResultDto<OrderReadDto>
+                .Success(updatedOrderDto, HttpStatusCode.OK);
+        }
+        catch (Exception ex)
+        {
+            return ResultDto<OrderReadDto>
+                .Failure($"An error occurred: {ex.Message}", HttpStatusCode.InternalServerError);
+        }
+    }
+
 
     public async Task<ResultDto<OrderItemReadDto>> GetOrderItem(Guid id)
     {

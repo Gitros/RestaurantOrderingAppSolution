@@ -6,9 +6,13 @@ namespace API.Controllers;
 
 public class OrderItemController(IOrderItemService orderItemService) : BaseApiController
 {
-    [HttpPost("{orderId}")]
-    public async Task<IActionResult> CreateOrderItem([FromBody] OrderItemCreateDto orderItemCreateDto, Guid orderId) =>
-        HandleResult(await orderItemService.CreateOrderItem(orderItemCreateDto, orderId));
+    [HttpPost("{orderId}/item")]
+    public async Task<IActionResult> AddOrderItem([FromBody] OrderItemCreateDto orderItemDto, Guid orderId) =>
+        HandleResult(await orderItemService.AddOrderItem(orderItemDto, orderId));
+
+    [HttpPost("{orderId}/items")]
+    public async Task<IActionResult> AddOrderItems([FromBody] IEnumerable<OrderItemCreateDto> orderItemDtos, Guid orderId) =>
+        HandleResult(await orderItemService.AddOrderItems(orderItemDtos, orderId));
 
     [HttpGet("{id}")]
     public async Task<IActionResult> GetOrderItem(Guid id) =>

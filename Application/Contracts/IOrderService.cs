@@ -11,7 +11,6 @@ public interface IOrderService
     Task<ResultDto<OrderReadDto>> CreateDineInOrder(DineInOrderCreateDto dineInOrderDto);
     Task<ResultDto<OrderReadDto>> CreateTakeawayOrder(TakeawayOrderCreateDto takeawayOrderDto);
     Task<ResultDto<OrderReadDto>> CreateDeliveryOrder(DeliveryOrderCreateDto deliveryOrderDto);
-    Task<ResultDto<OrderReadDto>> AddOrderItem(OrderItemCreateDto orderItemDto, Guid orderId);
     Task<ResultDto<OrderReadDto>> PayOrder(PaymentMethod paymentMethod, Guid orderId);
     Task<ResultDto<OrderReadDto>> SplitBill(SplitBillDto splitBillDto, Guid orderId);
     Task<ResultDto<OrderReadDto>> GetOrder(Guid id);
