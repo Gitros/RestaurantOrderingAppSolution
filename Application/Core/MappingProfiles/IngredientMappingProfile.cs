@@ -10,8 +10,7 @@ public class IngredientMappingProfile : Profile
     {
         // Map from IngredientCreateDto to Ingredient
         CreateMap<IngredientCreateDto, Ingredient>()
-            .ForMember(dest => dest.Id, opt => opt.MapFrom(_ => Guid.NewGuid()))
-            .ForMember(dest => dest.IngredientType, opt => opt.MapFrom(src => (IngredientType)src.IngredientType));
+            .ForMember(dest => dest.Id, opt => opt.MapFrom(_ => Guid.NewGuid()));
 
         // Map from Ingredient to IngredientReadDto
         CreateMap<Ingredient, IngredientReadDto>();

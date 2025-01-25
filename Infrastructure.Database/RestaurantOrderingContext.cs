@@ -26,6 +26,35 @@ public class RestaurantOrderingContext : DbContext
     {
         base.OnModelCreating(modelBuilder);
 
+        // Configure enums as strings
+        modelBuilder.Entity<Order>()
+            .Property(o => o.OrderStatus)
+            .HasConversion(
+                os => os.ToString(),
+                os => (OrderStatus)Enum.Parse(typeof(OrderStatus), os)
+            );
+
+        modelBuilder.Entity<Order>()
+            .Property(o => o.PaymentStatus)
+            .HasConversion(
+                ps => ps.ToString(),
+                ps => (PaymentStatus)Enum.Parse(typeof(PaymentStatus), ps)
+            );
+
+        modelBuilder.Entity<Order>()
+            .Property(o => o.OrderType)
+            .HasConversion(
+                ot => ot.ToString(),
+                ot => (OrderType)Enum.Parse(typeof(OrderType), ot)
+            );
+
+        modelBuilder.Entity<Ingredient>()
+            .Property(i => i.IngredientType)
+            .HasConversion(
+                it => it.ToString(),
+                it => (IngredientType)Enum.Parse(typeof(IngredientType), it)
+            );
+
         // Order and OrderItem relationship
         modelBuilder.Entity<Order>()
             .HasMany(o => o.OrderItems)
