@@ -2,7 +2,7 @@
 
 public class Table
 {
-    public Guid Id { get; set; } = Guid.NewGuid();
+    public Guid Id { get; set; }
     public required string Name { get; set; }
     public int NumberOfPeople { get; set; }
     public bool IsOccupied { get; set; }
