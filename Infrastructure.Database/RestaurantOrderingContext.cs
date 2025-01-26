@@ -1,7 +1,19 @@
 ﻿using Domain;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Design;
 
 namespace Infrastructure.Database;
+
+public class RestaurantOrderingContextFactory : IDesignTimeDbContextFactory<RestaurantOrderingContext>
+{
+    public RestaurantOrderingContext CreateDbContext(string[] args)
+    {
+        var optionsBuilder = new DbContextOptionsBuilder<RestaurantOrderingContext>();
+        optionsBuilder.UseSqlite("YourConnectionStringHere");
+
+        return new RestaurantOrderingContext(optionsBuilder.Options);
+    }
+}
 
 public class RestaurantOrderingContext : DbContext
 {

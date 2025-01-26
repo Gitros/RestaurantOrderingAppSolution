@@ -10,7 +10,6 @@
     <ProjectReference Include="..\Domain\Domain.csproj" />
     <ProjectReference Include="..\Infrastructure.Database\Infrastructure.Database.csproj" />
     <ProjectReference Include="..\RestaurantOrdering.Events.Domain\RestaurantOrdering.Events.Domain.csproj" />
-    <ProjectReference Include="..\RestaurantOrdering.Infrastructure.Events.Database\RestaurantOrdering.Events.Infrastructure.Database.csproj" />
   </ItemGroup>
 
   <PropertyGroup>

@@ -8,10 +8,10 @@ public static class DatabaseExtensions
 {
     public static IServiceCollection AddDatabaseServices(this IServiceCollection services, IConfiguration configuration)
     {
-        //services.AddDbContext<RestaurantOrderingContext>(opt =>
-        //{
-        //    opt.UseSqlite(configuration.GetConnectionString("DefaultConnection"));
-        //});
+        services.AddDbContext<RestaurantOrderingContext>(opt =>
+        {
+            opt.UseSqlite(configuration.GetConnectionString("DefaultConnection"));
+        });
 
         services.AddDbContext<EventsDatabaseContext>(opt =>
         {

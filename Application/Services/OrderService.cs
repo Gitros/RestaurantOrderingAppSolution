@@ -7,15 +7,11 @@ using AutoMapper;
 using Domain;
 using Infrastructure.Database;
 using Microsoft.EntityFrameworkCore;
-using RestaurantOrdering.Events.Domain;
-using RestaurantOrdering.Events.Domain.Orders;
-using RestaurantOrdering.Events.Infrastructure.Database;
 using System.Net;
-using System.Text.Json;
 
 namespace Application.Services;
 
-public class OrderService(RestaurantOrderingContext orderingContext, EventsDatabaseContext eventsDatabaseContext, IMapper mapper) : IOrderService
+public class OrderService(RestaurantOrderingContext orderingContext, IMapper mapper) : IOrderService
 {
     public async Task<ResultDto<OrderReadDto>> CreateDineInOrder(DineInOrderCreateDto dineInOrderDto)
     {
@@ -103,19 +99,19 @@ public class OrderService(RestaurantOrderingContext orderingContext, EventsDatab
 
             var orderReadDto = mapper.Map<OrderReadDto>(deliveryOrder);
 
-            var orderCreatedEvent = new DeliveryOrderCreatedEvent
-            {
-                AdditionalInstructions = deliveryOrderDto.AdditionalInstructions,
-            };
+            //var orderCreatedEvent = new DeliveryOrderCreatedEvent
+            //{
+            //    AdditionalInstructions = deliveryOrderDto.AdditionalInstructions,
+            //};
 
-            await eventsDatabaseContext.EventContexts.AddAsync(new EventContext
-            {
-                CorrelationId = Guid.NewGuid(),
-                DateTime = DateTime.Now,
-                EventType = nameof(DeliveryOrderCreatedEvent),
-                Id = Guid.NewGuid(),
-                PayloadJson = JsonSerializer.Serialize(orderCreatedEvent)
-            });
+            //await eventsDatabaseContext.EventContexts.AddAsync(new EventContext
+            //{
+            //    CorrelationId = Guid.NewGuid(),
+            //    DateTime = DateTime.Now,
+            //    EventType = nameof(DeliveryOrderCreatedEvent),
+            //    Id = Guid.NewGuid(),
+            //    PayloadJson = JsonSerializer.Serialize(orderCreatedEvent)
+            //});
 
             return ResultDto<OrderReadDto>
                 .Success(orderReadDto, HttpStatusCode.Created);
