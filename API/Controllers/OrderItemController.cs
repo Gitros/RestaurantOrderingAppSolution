@@ -1,5 +1,6 @@
 ﻿using Application.Contracts;
 using Application.Dtos.OrderItems;
+using Application.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers;
@@ -21,6 +22,10 @@ public class OrderItemController(IOrderItemService orderItemService) : BaseApiCo
     [HttpGet]
     public async Task<IActionResult> GetAllOrderItems() =>
         HandleResult(await orderItemService.GetAllOrderItems());
+
+    [HttpPut("{orderId}/order-items/{orderItemId}/apply-discount")]
+    public async Task<IActionResult> ApplyOrderItemDiscount(decimal discount, Guid orderId, Guid orderItemId) =>
+        HandleResult(await orderItemService.ApplyOrderItemDiscount(discount, orderId, orderItemId));
 
     [HttpPut("{orderId}/items/{orderItemId}")]
     public async Task<IActionResult> UpdateOrderItem([FromBody] OrderItemUpdateDto updateDto, Guid orderItemId, Guid orderId) =>
