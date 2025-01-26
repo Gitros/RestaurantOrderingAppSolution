@@ -1,5 +1,6 @@
 ﻿using Infrastructure.Database;
 using Microsoft.EntityFrameworkCore;
+using RestaurantOrdering.Events.Infrastructure.Database;
 
 namespace API.Extensions;
 
@@ -7,9 +8,14 @@ public static class DatabaseExtensions
 {
     public static IServiceCollection AddDatabaseServices(this IServiceCollection services, IConfiguration configuration)
     {
-        services.AddDbContext<RestaurantOrderingContext>(opt =>
+        //services.AddDbContext<RestaurantOrderingContext>(opt =>
+        //{
+        //    opt.UseSqlite(configuration.GetConnectionString("DefaultConnection"));
+        //});
+
+        services.AddDbContext<EventsDatabaseContext>(opt =>
         {
-            opt.UseSqlite(configuration.GetConnectionString("DefaultConnection"));
+            opt.UseSqlite(configuration.GetConnectionString("EventsDatabaseContext"));
         });
 
         return services;
